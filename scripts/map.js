@@ -58,7 +58,7 @@ function createMap(){
 
 
 function getData(map){
-    $.getJSON("SwastikaCounter/data/final_data.geojson", function(response){
+    $.getJSON("/SwastikaCounter/data/final_data.geojson", function(response){
             pointGeoJSON = response;
             pointLayer = loadPointLayer();
         });
