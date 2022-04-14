@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
+html {
+    background-color: #F6F6F4;
+    color: rgb(65, 63, 63);
+    width:100%;
+    height:100%;
+    
+}
+body {
+    margin: auto;
+    font-family: 'Quicksand', sans-serif;
+    
+    
+} 
+#screenFill {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    display:flex;
+    flex-direction: column;
+}
+
+.container {
+
+    width:100%;
+    height:100%;
+    display: flex;
+    flex-direction: row;
+}
+.map-container {
+    position: relative;
+    align-self: center;
+    width:100%;
+    height: 100%;
+}
+.map-filters {
+    width:5%;
+    background-color: #F6F6F4;
+    border-right: 2px solid black;
+}
+.map-query {
+    width:5%;
+    background-color: #F6F6F4;
+    border-right: 2px solid black;
+    transition-duration: 0.2s;
+}
+.map-query:hover {
+    width:25%;
+}
+.map-display {
+    width:100%;
+    background-color: transparent;
+}
+#map {
+    width:100%;
+    height: 100%;
+}
+
+.header {
+    width:100%;
+    margin:auto;
+    height:fit-content;
+    transition-duration: 0.2s;
+    border:2px solid black; 
+
+    
+}
+.header-child {
+    width:80%;
+    margin:auto;
+    transition-duration: 0.2s;
+    
+}
+.header:hover{
+    color:rgb(238, 232, 232);
+    background-color: #353533;
+}
+.header:hover .header-child {
+    width:70%;
+}
+.map-header {
+    position:absolute;
+    top:0;
+    
+    right:0;
+    left:0;  
+    pointer-events: none;
+    padding:10px;
+    z-index: 314159;
+}
+#year-text {
+    text-align: center;
+    width:50%;
+    background-color: #ffffffbd;
+    color:rgb(66, 66, 66);
+    margin:auto;
+    border-radius: 6px;
+}
+.time-slider {
+    position:absolute;
+    bottom:0;
+    z-index: 314159;
+    right:0;
+    left:0;
+}
+.slider {
+    width:0%;
+    visibility: hidden;
+    transition-duration: 0.3s;
+}
+button {
+    background-color: #252323;
+    padding:10px;
+    border-radius: 10px;
+    font-size: 1em;
+    border:0px;
+    color:white;
+    font-family: 'Quicksand', sans-serif;
+}
+button:hover {
+    background-color: white;
+    color:black;
+}
+.popup {
+    background: rgba(0, 0, 0, 0) !important;
+    border: none !important;
+    font-size: 1rem;
+    box-shadow: none !important;
+    font-family: 'Quicksand', sans-serif;
+    box-shadow: none;
+}
+.popup .leaflet-popup-tip {
+    background-color: transparent;
+    border: 0px;
+    box-shadow: none;
+}
+.popup .leaflet-popup-content-wrapper {
+    background: #252323;
+    color: #ffffff;
+    box-shadow: none;
+}

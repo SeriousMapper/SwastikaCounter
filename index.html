@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/style.css">
+    <title>Swastika Counter Map</title>
+    <link rel="stylesheet" href="lib/leaflet.css"/>
+    <script src="lib/leaflet-src.js"></script>
+    <script src="lib/jquery-3.6.0.js"> </script>
+</head>
+<body>
+    
+
+    <div id="screenFill">
+        <div class="header">
+            <div class="header-child">
+                <h2> Swastika Counter Map Dashboard </h2>
+            </div>
+        </div>
+    
+        <div class="container">
+  
+            <div class="map-filters">
+
+            </div>
+            <div class="map-container">
+                <div class="map-header">
+                    <h1 id="year-text"> Year: 2016-2021</h1>
+                    
+                </div>
+                <div id="map"> </div>
+                <div class="time-slider">
+                    <input type="range" min="2016" max="2021" value="2016" class="slider" id="myRange">
+                    <button id="show-all"> Query Years </button>
+                </div>
+            </div>
+            <div class="map-query">
+                    
+            </div>
+
+        </div>
+
+        </div>
+    
+    <script src="scripts/map.js"></script>
+</body>
+</html>
