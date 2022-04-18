@@ -58,7 +58,7 @@ function createMap(){
 
 
 function getData(map){
-    $.getJSON("/SwastikaCounter/data/final_data.geojson", function(response){
+    $.getJSON("data/swastika_geocoded.geojson", function(response){
             pointGeoJSON = response;
             pointLayer = loadPointLayer();
         });
@@ -66,14 +66,14 @@ function getData(map){
 function loadPointLayer() {
     return L.geoJson(pointGeoJSON, {
         filter: function(feature, layer) {
-            return !queryYears ? true : currYear == feature.properties.Year;
+            return !queryYears ? true : currYear == feature.properties.year;
         },
         pointToLayer: function (feature, latlng){
             //console.log(latlng)
             return L.circleMarker(latlng, stylePoints(feature));
         },
         onEachFeature: (feature, layer) => {
-            layer.bindPopup(`<h2> ${feature.properties.city}, ${feature.properties.STATE}</h2> <p> Place: ${feature.properties.place} </p> <p> ${feature.properties.date} </p>` , {
+            layer.bindPopup(`<h2> ${feature.properties.city_state}</h2> <p> Place: ${feature.properties.place} </p> <p> ${feature.properties.date} </p>` , {
                 closeButton: false,
                 className: "popup"
             });
