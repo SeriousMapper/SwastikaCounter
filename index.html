@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles/style.css">
     <title>Swastika Counter Map</title>
-    <link rel="stylesheet" href="lib/leaflet.css"/>
+    <link rel="stylesheet" href="lib/leaflet.css" />
     <script src="lib/leaflet-src.js"></script>
     <script src="lib/jquery-3.6.0.js"> </script>
 </head>
+
 <body>
-    
+
 
     <div id="screenFill">
         <div class="header">
@@ -19,59 +21,80 @@
                 <h2> Swastika Counter Map Dashboard </h2>
             </div>
         </div>
-    
-        <div class="container">
-  
-            <div class="map-filters" style="width:30%; font-size: larger;">
-                
-                <ul> Filter <b>map</b> properties such as:
-                    <li>County (or state?) Election Map (2016/2020?)</li>
-                    <li>Hate map data from Southern Poverty Law Center</li>
-                    <li>Choropleth of amount of incidents by state</li>
-                  </ul> 
-                  <ul> Filter <b>point</b> properties such as:
-                    <li>Type of media source (e.g, Local News, National News)</li>
-                    <li>Category of place (public space, college, etc.) or type of place (library, dorm)</li>
-                    <li>Reported symbol</li>
-                    <li>Qualitative color scheme, or selectable checkbox query.. (on hover of selection, highlight specific properties)</li>
-                  </ul>
-                <div style="margin-left:10px">
-                  <h3>Questions:</h3>
-                  <p>Would you like a time query, such as the Southern Poverty Law map? If so, by month or by year?</p>
-                  <p> Is there any other properties to be added or properties to be omitted from the above map and point filters?</p>
-                  <p> Should we show the links to the websites? (I know that some links may not be working)</p>
 
-                  <h3>Ideas:</h3>
-                  <p> The panel on the right could function similar to the Southern Poverty Law hate map. A list of the properties will come up and the user can highlight or check
-                      the desired filters.  
-                  </p>
-                  <p>
-                      The user can save the queries (e.g., swastikacounter.org/map?place=college&&... ) and share the link!
-                  </p>
-                  <h3>Current Problems:</h3>
-                  <p> Some of the cities were not correctly geocoded (obtaining lat,long coordinates)</p>
-                  <h4>Please let me know of anything not addressed!</h4>
-                    </div>
+        <div class="container">
+
+            <div class="map-filters">
+                <button id="show-election-data" class="filter"> Show US County Election Data</button>
+                <button id="show-point-query" class="filter"> Filter Point Data</button>
+
             </div>
             <div class="map-container">
                 <div class="map-header">
                     <h1 id="year-text"> Year: 2016-2021</h1>
-                    
+
                 </div>
                 <div id="map"> </div>
                 <div class="time-slider">
                     <input type="range" min="2016" max="2021" value="2016" class="slider" id="myRange">
                     <button id="show-all"> Query Years </button>
                 </div>
+                <div class="infoBox">
+                    <h3>Hover over a county</h3>
+                </div>
             </div>
             <div class="map-query">
-                    
+
             </div>
 
         </div>
 
+    </div>
+    <ul> Filter <b>map</b> properties such as:
+        <li>County (or state?) Election Map (2016/2020?)</li>
+        <li>Hate map data from Southern Poverty Law Center</li>
+        <li>Choropleth of amount of incidents by state</li>
+      </ul> 
+      <ul> Filter <b>point</b> properties such as:
+        <li>Type of media source (e.g, Local News, National News)</li>
+        <li>Category of place (public space, college, etc.) or type of place (library, dorm)</li>
+        <li>Reported symbol</li>
+        <li>Qualitative color scheme, or selectable checkbox query.. (on hover of selection, highlight specific properties)</li>
+      </ul>
+    <div style="margin-left:10px">
+      <h3>Questions:</h3>
+      <p>Would you like a time query, such as the Southern Poverty Law map? If so, by month or by year?</p>
+      <p> Is there any other properties to be added or properties to be omitted from the above map and point filters?</p>
+      <p> Should we show the links to the websites? (I know that some links may not be working)</p>
+
+      <h3>Ideas:</h3>
+      <p> The panel on the right could function similar to the Southern Poverty Law hate map. A list of the properties will come up and the user can highlight or check
+          the desired filters.  
+      </p>
+      <p>
+          The user can save the queries (e.g., swastikacounter.org/map?place=college&amp;&amp;... ) and share the link!
+      </p>
+      <h3>Current Problems:</h3>
+      <p> Some of the cities were not correctly geocoded (obtaining lat,long coordinates)</p>
+      <h4>Please let me know of anything not addressed!</h4>
         </div>
-    
+
+    <div id="hidden-objects">
+        <div id="point-query">
+            <h3>Filter incidents by: 
+            <select name="point-types" id="point-query-select">
+                <option value="place"> Place</option>
+                <option value="source"> Source </option>
+                <option value="media"> Media</option>
+                <option value="category">Category</option>
+            </select>
+        </h3>
+        </div>
+    </div>
+
+
+
     <script src="scripts/map.js"></script>
 </body>
+
 </html>
