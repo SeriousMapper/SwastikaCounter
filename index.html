@@ -25,8 +25,12 @@
         <div class="container">
 
             <div class="map-filters">
-                <button id="show-election-data" class="filter"> Show US County Election Data</button>
-                <button id="show-point-query" class="filter"> Filter Point Data</button>
+                <input type="radio" id="no-layer" name="layer" value="noLayer">
+                <label for="no-layer">Clear Layers</label>
+                <input type="radio" id="county-layer" name="layer" value="countyLayer">
+                <label for="county-layer">County Layer</label>
+                <input type="radio" id="state-layer" name="layer" value="stateLayer" checked="checked">
+                <label for="state-layer">State Layer</label> 
 
             </div>
             <div class="map-container">
@@ -93,8 +97,8 @@
     </div>
 
 
-
-    <script src="scripts/map.js"></script>
+    
+    <script type = "module" src="scripts/map.js"></script>
 </body>
 
 </html>

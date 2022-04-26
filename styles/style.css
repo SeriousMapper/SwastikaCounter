@@ -36,6 +36,37 @@ html, body {
     border-right: 2px solid black;
     background-color: #F6F6F4;
 }
+.map-filters input[type="radio"] {
+    position: fixed;
+    opacity: 0;
+    pointer-events: none;
+    
+}
+.map-filters label,
+.map-filters input {
+  display: block;
+  margin:0;
+  border:2px solid black;
+  text-align: center;
+}
+
+.map-filters label {
+    padding:10px;
+    border-radius: 5px;
+    background-color: #F6F6F4;
+    margin:3px;
+    margin-bottom: 0;
+    transition-duration: 0.3s;
+}
+.map-filters input[type="radio"]:checked+label,
+.Checked+label {
+  background: rgb(83, 83, 83);
+  color:white;
+}
+.map-filters label:hover {
+    background-color: rgb(177, 177, 177);
+    color:rgb(44, 44, 44);
+}
 .map-query {
     background-color:#F6F6F4;
     color: #0a0a0a;
@@ -115,7 +146,7 @@ html, body {
 .infoBox {
     position: absolute;
     width:15%;
-    background-color: #252323;
+    background-color: #252323c4;
     color:white;
     margin:10px;
     padding:10px;

@@ -1,3 +1,7 @@
+
+import * as stateMap from "./states.js";
+import * as countyMap from "./county.js";
+export {infoBox}
 var map;
 var slider;
 let legend;
@@ -8,10 +12,9 @@ let queryPoints = false;
 //MAP LAYERS
 let pointLayer;
 let countyLayer;
-let currentPolyLayer;
+let currentLayer;
 //JSON LAYERS
 let pointGeoJSON;
-let election2020JSON;
 
 //Page objects
 let infoBox
@@ -22,6 +25,7 @@ window.onload = () => {
 function initialize() {
     infoBox = $('.infoBox')
     infoBox.css({ visibility: "hidden"})
+    $('#year-text').css({visibility: 'hidden'})
     mapQuery = $('.map-query')
     $('.map-query').toggleClass('collapsed')
     createMap();
@@ -31,7 +35,7 @@ function initialize() {
     loadSlider();
     loadFilters();
     loadQueries();
-    legend.addTo(map);
+    
 }
 function loadPanes() {
     map.createPane("locationMarker")
@@ -39,21 +43,30 @@ function loadPanes() {
     map.createPane('popup');
     map.getPane("popup").style.zIndex = 500;
 }
+
 function loadFilters() {
-    let electionBtn = $("#show-election-data")
-    electionBtn.click( () => {
-        console.log(election2020JSON)
-        showElectionData = !showElectionData;
-        if (showElectionData) {
-            infoBox.css({ visibility: "visible"})
-            countyLayer = loadElectionLayer(election2020JSON);
-            electionBtn.html('Hide US County Elections')
-        }else {
-            infoBox.css({ visibility: "hidden"})
-            map.removeLayer(countyLayer)
-            electionBtn.html('Show US County Elections')
+    $("input[name='layer']").click(function(e){
+        clearCurrentLayer();
+        switch (e.target.value) {
+            case 'countyLayer':
+                countyMap.loadLayer(map)
+                currentLayer = countyMap;
+                break;
+            case 'stateLayer':
+                stateMap.loadLayer(map)
+                currentLayer = stateMap;
+                break;
+            case 'noLayer':
+                console.log('no layer selected')
+                break;
         }
-    })
+    });
+}
+function clearCurrentLayer() {
+    if (currentLayer) {
+    currentLayer.clearLayer(map);
+    currentLayer = null;
+    }
 }
 function loadQueries() {
     let queryPts = $('#show-point-query')
@@ -82,8 +95,10 @@ function loadSlider() {
         if (queryYears) {
             $('#year-text').html(`Year: ${currYear}`)
             $('.slider').css({'width': '30%', 'visibility': 'visible'})
+            $('#year-text').css({'visibility': 'visible'})
         }else {
             $('#year-text').html(`Year: 2016-2021`)
+            $('#year-text').css({'visibility': 'hidden'})
             $('.slider').css({'width': '0%', 'visibility': 'hidden'})
         }
         console.log(queryYears)
@@ -115,19 +130,17 @@ function getData(map){
         });
     $.getJSON('data/counties_election.geojson').then( function(response) {
 
-        election2020JSON = response;
-        
+        countyMap.storeData(response)
+    });
+    $.getJSON('data/STATE_LAYER_WGS84MIN.json').then( function(response) {
 
-
-
+        stateMap.storeData(response)
+        stateMap.loadLayer(map)
+        currentLayer = stateMap;
     });
     };
-function loadElectionLayer(county_data) {
-    return L.geoJson(county_data, {
-            style: style,
-            onEachFeature: onEachFeature
-    }).addTo(map);
-}
+
+
 function loadPointLayer() {
     return L.geoJson(pointGeoJSON, {
         filter: function(feature, layer) {
@@ -153,106 +166,12 @@ function loadPointLayer() {
 function stylePoints(feature) {
     var geojsonMarkerOptions = {
         radius: 4,
-        fillColor: '#000',
-        color: "transparent",   
-        weight: 4,
+        fillColor: '#FFF',
+        color: "#000",   
+        weight: 2,
         opacity: 1,
         fillOpacity: 0.8,
-        bindPopup: "Hello World",
         pane: "locationMarker",
     }; 
     return geojsonMarkerOptions;
-}
-legend = L.control({ position: 'bottomright' });
-
-    legend.onAdd = function (map) {
-
-        var div = L.DomUtil.create('div', 'info legend'),
-            quantile = ['100', '75', '50', '25', '0', '25', '50', '75'],
-            grades = [-1.00, -0.75, -0.50, -0.25, 0.00, 0.25, 0.50, 0.75],
-            labels = [],
-            from, to;
-
-        for (var i = 0; i < grades.length; i++) {
-            from = grades[i];
-            to = grades[i + 1];
-
-            labels.push(
-                '<i style="background:' + getColor(from + 0.01) + '"></i> ' +
-                quantile[i] + (quantile[i+1] ? '&ndash;' + quantile[i+1] : '&ndash;100'));
-        }
-
-        div.innerHTML = labels.join('<br>');
-        return div;
-    };
-
-    
-function getColor(d) {
-    return d > 0.750 ? '#C93135' :
-              d > 0.500 ? '#DB7171' :
-                d > 0.250 ? '#EAA9A9' :
-                  d > 0.000 ? '#FCE0E0' :
-                    d > -0.250 ? '#CEEAFD' :
-                        d > -0.500 ? '#92BDE0' :
-                            d > -0.750 ? '#5295CC' :
-                                            '#1375B7';
-}
-function style(feature) {
-    return {
-        weight: 0.6,
-        opacity: 0.8,
-        color: 'white',
-        fillOpacity: 1,
-        fillColor: getColor(feature.properties.per_point_diff)
-    };
-}
-
-function highlightFeature(e) {
-    var layer = e.target;
-
-    layer.setStyle({
-        weight: 2,
-        color: '#ADFF2F',
-        dashArray: '',
-        fillOpacity: 0.7
-    });
-
-    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
-    }
-    updateInfoBox(layer.feature)
-
-
-}
-function clearInfoBox() {
-    infoBox.html(`
-    <h3> Hover over a county </h3>`)
-}
-function updateInfoBox(feature) {
-    feature = feature.properties    
-    infoBox.html(`
-    <h3> ${feature.name_y}, ${feature.state_name}  </h3> 
-    <ul>
-    <li> Percent Democrat: ${feature.per_dem.toFixed(2)}</li>
-    <li> Percent GOP: ${feature.per_gop.toFixed(2)} </li>
-    <li> Normalized Difference: ${feature.per_dem.toFixed(2)} </li>
-     </ul>
-    `)
-}
-function resetHighlight(e) {
-    countyLayer.resetStyle(e.target);
-    clearInfoBox();
-}
-
-function zoomToFeature(e) {
-    console.log(map)
-    map.fitBounds(e.target.getBounds());
-}
-
-function onEachFeature(feature, layer) {
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        click: zoomToFeature
-    });
 }
