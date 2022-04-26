@@ -16,21 +16,25 @@
 
 
     <div id="screenFill">
-        <div class="header">
-            <div class="header-child">
-                <h2> Swastika Counter Map Dashboard </h2>
-            </div>
-        </div>
+        <h2 style="text-align: center";>Swastika Counter Map Dashboard</h2>
 
         <div class="container">
 
             <div class="map-filters">
-                <input type="radio" id="no-layer" name="layer" value="noLayer">
-                <label for="no-layer">Clear Layers</label>
-                <input type="radio" id="county-layer" name="layer" value="countyLayer">
-                <label for="county-layer">County Layer</label>
-                <input type="radio" id="state-layer" name="layer" value="stateLayer" checked="checked">
-                <label for="state-layer">State Layer</label> 
+                <div class="sidebar">
+                    <img src="/svg/layer-icon.svg" alt="">
+                    <div class="sidebar-content">
+                        <input type="radio" id="no-layer" name="layer" value="noLayer">
+                        <label for="no-layer">Clear Layers</label>
+                        <input type="radio" id="county-layer" name="layer" value="countyLayer">
+                        <label for="county-layer">County Layer</label>
+                        <input type="radio" id="state-layer" name="layer" value="stateLayer" checked="checked">
+                        <label for="state-layer">State Layer</label> 
+                    </div>
+                    <h3> Layers ></h3>
+
+                </div>
+
 
             </div>
             <div class="map-container">
