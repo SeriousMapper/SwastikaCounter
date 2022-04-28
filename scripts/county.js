@@ -1,13 +1,15 @@
 let legend = L.control({ position: 'bottomright' });
 let data;
 let map_layer;
+let map;
 let infoBox = $('.infoBox')
 
 export {loadLayer, storeData, clearLayer, data }
 function storeData(json) {
     data = json;
 }
-function loadLayer(map) {
+function loadLayer(global_map) {
+    map = global_map;
     map_layer =  L.geoJson(data, {
             style: style,
             onEachFeature: onEachFeature

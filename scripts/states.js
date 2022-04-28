@@ -10,12 +10,13 @@ infoBox.css({ visibility: "visible"})
 function storeData(json) {
     data = json;
 }
- function loadLayer(map) {
+ function loadLayer(global_map) {
+    map = global_map;
     map_layer =  L.geoJson(data, {
             style: style,
             onEachFeature: onEachFeature
     }).addTo(map);
-    map = map;
+   
     infoBox.css({ visibility: "visible"})
     legend.addTo(map);
     clearInfoBox();
