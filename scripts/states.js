@@ -21,7 +21,7 @@ let stateIncidentLegend = {
     quantiles: [0, 12, 31, 79, 135]
 }
 let selectedLegend = 'POP_JEW_TO';
-let colors_5 = ['#cbd5eb', '#b2c2e3', '#98aedc', '#7e9bd4', '#6389cc']
+let colors_5 = ['#f2f0f7','#cbc9e2','#9e9ac8','#756bb1','#54278f']
 let legends = {"jew_pop":jewPopLegend, "incidents": stateIncidentLegend}
 function setParent(obj) {
     parent = obj;
