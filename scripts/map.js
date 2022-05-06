@@ -402,7 +402,7 @@ function createMap() {
     //add OSM base tilelayer
     map = L.map('map', {
         minZoom: 5,
-        maxZoom: 7,
+        maxZoom: 9,
     }).setView([37.8, -96], 5);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
         attribution: '©OpenStreetMap, ©CartoDB'
