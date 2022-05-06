@@ -1,14 +1,50 @@
-
-export {loadLayer, clearLayer, storeData, data , legend}
-
+import { sideBarCollapsed, handleSidebarCollapse } from "./components/sidebar.js";
+import InfoBox from "./components/InfoBox.js";
+export {loadLayer, clearLayer, storeData, resetMapLayer, loadBreaks, setParent, data , legend, queryable}
 let infoBox = $('.infoBox')
 let map;
 let map_layer;
 let data;
+let parent;
 infoBox.css({ visibility: "visible"})
+let queryable = ['POP_JEW_TO']
+let breaksData;
+let quantiles = {}
+let jewPopLegend = {
+    title: "Jewish Population by State",
+    property: "POP_JEW_TO",
+    quantiles: [0, 69200, 154600, 348000, 1173600]
+}
+let stateIncidentLegend = {
+    title: "Reported Incidents by State",
+    property:"NUMPOINTS",
+    quantiles: [0, 12, 31, 79, 135]
+}
+let selectedLegend = 'POP_JEW_TO';
+let colors_5 = ['#cbd5eb', '#b2c2e3', '#98aedc', '#7e9bd4', '#6389cc']
+let legends = {"jew_pop":jewPopLegend, "incidents": stateIncidentLegend}
+function setParent(obj) {
+    parent = obj;
+}
+async function loadBreaks() {
+    await fetch("data/breaks/state_jenks_breaks.json")
+.then(response => {
+   return response.json();
+})
+.then(jsondata => {
+    queryable = Object.keys(jsondata)
+    breaksData = jsondata
+    
+});
+console.log(breaksData)
+return breaksData;
 
+
+}
 function storeData(json) {
     data = json;
+    
+
 }
  function loadLayer(global_map) {
     map = global_map;
@@ -35,24 +71,58 @@ function getColor(d) {
                         d > 0 ? '#d4d4d4':
                             '#ffffff';
 }
+function getColorProperty(prop) {
+    let legendSel = breaksData[selectedLegend]
+    let quantiles = [...legendSel.QUAN_BREAKS]
+    quantiles.reverse()
+    let color = ""
+    let colors = [...colors_5]
+    colors.reverse()
+    for(let i=0; i < quantiles.length; i++) {
+        if(prop > quantiles[i]) {
+            if (color == "") {
+
+                if(i===0) {
+                    
+                }
+            color = colors[i]
+        }
+            
+        }
+    }
+    if(!color) {
+        color = colors_5[0]
+    }
+    return color;
+}
+function resetMapLayer(map, sel) {
+    selectedLegend = sel;
+    map_layer.eachLayer( (layer) => {
+        layer.setStyle(style(layer.feature))
+    })
+    map.removeControl(legend)
+    legend.addTo(map)
+}
 function style(feature) {
+    let property = selectedLegend
     return {
-        weight: 0.6,
-        opacity: 0.8,
-        color: 'white',
+        weight: 1.0,
+        opacity: 1.0,
+        color: 'black',
         fillOpacity: 1,
-        fillColor: getColor(feature.properties.NUMPOINTS)       
+        fillColor: getColorProperty(feature.properties[property])    
     }
 }
 function highlightFeature(e) {
     var layer = e.target;
-
-    layer.setStyle({
-        weight: 2,
-        color: '#ADFF2F',
-        dashArray: '',
-        fillOpacity: 0.7
-    });
+     layer.setStyle(
+        {
+            color:"white",
+            weight: 4.0,
+            opacity:0.7,
+            fillOpacity:0.8,
+        }
+    ); 
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
@@ -71,11 +141,50 @@ function updateInfoBox(feature) {
     <h3> ${feature.NAME10}  </h3> 
     <ul>
     <li> Number of Incidents: ${feature.NUMPOINTS}</li>
-    <li> Jewish Population (%): ${(feature.PCT_JEW_TO * 100).toFixed(2)} </li>
-    <li> Total Jewish Population: ${feature.POP_JEW_TO} </li>
 
      </ul>
+     <span style='text-align:center'> Click on <b> ${feature.NAME10} </b> for more info </span>
     `)
+}
+function loadCensusData(feature) {
+    console.log(feature.properties)
+    let props = feature.properties
+    let mapQueryDiv = $('#query-container')
+    let html = `
+    <div class='point-query-container'> 
+    <div class='point-query-header'> 
+    <h2> ${props.NAME10} </h2> <h4> Reported Incidents: ${props.NUMPOINTS} 
+    </div> 
+    <div class = "state-info-container">
+    <h3> Demographics </h3>
+    <p> Demographic data is obtained from the <a href="https://www.census.gov/"> U.S Census Bureau </a> and the <a href="https://ajpp.brandeis.edu"> American Jewish Population Project</a>.
+    <ul> 
+    <li> <b> Population Density: </b> ${props.POP_DENS} per sq. mi. </li>
+    <li> <b> Total Population: </b> ${props.POP_TOTAL.toLocaleString()} </li> <br>
+    <li> <b> Jewish Population:  </b> ${props.POP_JEW_TO.toLocaleString()} </li>
+    <li> <b> Jewish Population (%):  </b> ${(props.PCT_JEW_TO * 100).toFixed(2)} </li> <br>
+
+    <li> <b> Black Population:  </b> ${props.POP_BLACK.toLocaleString()} </li>
+    <li> <b> Black Population (%):  </b> ${(props.PCT_BLACK * 100).toFixed(2)} </li> <br>
+    <li> <b> White Population:  </b> ${props.POP_WHITE.toLocaleString()} </li>
+    <li> <b> White Population (%):  </b> ${(props.PCT_WHITE * 100).toFixed(2)} </li> <br>
+    </ul>
+    <h3> Reported Hate Groups </h3>
+    <p> Hate group data is obtained from the <a href="https://www.splcenter.org/hate-map" >Southern Poverty Law Center Hate Map </a> </p>
+    <ul>
+    <li> <b> 2016: </b> ${props.COUNT2016} </li>
+    <li> <b> 2017: </b> ${props.COUNT2017} </li>
+    <li> <b> 2018: </b> ${props.COUNT2018} </li>
+    <li> <b> 2019: </b> ${props.COUNT2019} </li>
+    <li> <b> 2020: </b> ${props.COUNT2020} </li>
+    <li> <b> 2021: </b> ${props.COUNT2021} </li>
+    </ul>
+    </div>
+    </div>`
+    mapQueryDiv.html(html)
+    if (sideBarCollapsed) {
+        handleSidebarCollapse();
+    }
 }
 function resetHighlight(e) {
     map_layer.resetStyle(e.target);
@@ -85,6 +194,7 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
     console.log(map)
     map.fitBounds(e.target.getBounds());
+    loadCensusData(e.target.feature)
 }
 
 function onEachFeature(feature, layer) {
@@ -98,10 +208,10 @@ function onEachFeature(feature, layer) {
 let legend = L.control({ position: 'bottomright' });
 
 legend.onAdd = function (map) {
-
+    let legendSel = breaksData[selectedLegend]
     var div = L.DomUtil.create('div', 'info legend'),
-        quantile = ['0', '12', '31', '79', '135', '211'],
-        grades = [12, 31, 79, 135, 211],
+        quantile = legendSel.QUAN_BREAKS,
+        grades = legendSel.QUAN_BREAKS,
         labels = [],
         from, to;
 
@@ -110,10 +220,10 @@ legend.onAdd = function (map) {
         to = grades[i + 1];
 
         labels.push(
-            '<i style="background:' + getColor(from + 0.01) + '"></i> ' +
-            quantile[i] + (quantile[i+1] ? ' &ndash; ' + quantile[i+1] : '&ndash;100'));
+            '<i style="background:' + getColorProperty(from + 0.00001) + '"></i> ' +
+            quantile[i] + (quantile[i+1] ? ' &ndash; ' + quantile[i+1] : ' &ndash; ' + legendSel.MAX));
     }
 
-    div.innerHTML = "<h3> Reported Incidents </h3>"  + labels.join('<br style="margin-bottom: 4px">');
+    div.innerHTML = `<h3> ${legendSel.NAME} </h3>`  + labels.join('<br style="margin-bottom: 4px">');
     return div;
 };

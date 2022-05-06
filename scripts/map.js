@@ -1,36 +1,52 @@
 import * as stateMap from "./states.js";
 import * as countyMap from "./county.js";
+import {handleSidebarCollapse, sideBarCollapsed} from "./components/sidebar.js";
 export {
     infoBox
 }
 var map;
-var slider;
-let legend;
-let sideBarCollapsed = false
+
+
 var currYear = 2016;
 let queryYears = false;
-let showElectionData = false;
-let queryPoints = false;
 
-let pointFilterMenu;
-let pointFilter = []
-//MAP LAYERS
+//point legend
+let qualColors = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+let categories = []
+let selectedFilter = 'source'
+let pointLegend = L.control({ position: 'bottomright' })
+
+//legend changer
+let stateLegendSelect = $('#legend-select-state')
+let countyLegendSelect = $('#legend-select-county')
+let legendSelectText = $('#legend-select-text')
+//point layer
 let pointLayer;
-let countyLayer;
-let currentLayer;
-//JSON LAYERS
 let pointGeoJSON;
+let pointFilterMenu;
+let appliedFilters = {}
+let filterColors = {}
+let pointFilter = []
 let pointCities = {}
 let pointFilters = {}
 let allowedPointFilters = ['category of place', 'media', 'source', 'Nazi Reference']
+
+
+
 //Page objects
 let infoBox
 let mapQuery;
+
+// Current Layer (defines current object) ! polygon
+let currentLayer;
+
 window.onload = () => {
     initialize();
 }
 
-function initialize() {
+async function initialize() {
+
+    /* Perform initial hiding  and declaration of page objects */
     infoBox = $('.infoBox')
     infoBox.css({
         visibility: "hidden"
@@ -39,39 +55,90 @@ function initialize() {
         visibility: 'hidden'
     })
     mapQuery = $('.map-query')
-    sideBarCollapsed = true;
-    createMap();
+    /* End block */
 
-    getData(map)
 
-    loadPanes();
-    loadSlider();
-    loadFilters();
-    loadClickEvents();
+    createMap(); // creates leaflet map
+    loadPanes(); // creates panes (for z-indices) for leaflet map
+    addCountyMapOptions();
+    await addStateMapOptions(); //gets JSON with breaks and variables for statemap
+    await getData(map) // asynchronous get data (gets data of state, county and point map)
+    
+    
+    loadSlider(); // creates time slider
+    loadFilters(); //load point filters
+    loadClickEvents(); //click event functions
+    console.log(categories)
+    countyLegendSelect.hide()
+
+    
+    
 
 
 }
+function addCountyMapOptions() {
+    const options = [12, 16, 20]
+    let optionCont = $('#legend-select-county')
+    options.forEach( option => {
+        optionCont.append( $('<option>', {
+            value: option,
+            text: `20${option} U.S. Presidential Election`
+        }))
+    })
+    optionCont.change( (e) => {
+        let value = e.target.value
+        countyMap.resetMapLayer(map, value)
+    })
 
+}
+async function addStateMapOptions() {
+    let options = await stateMap.loadBreaks()
+    let optionKeys = Object.keys(options)
+    let optionCont = $('#legend-select-state')
+    optionKeys.forEach(option => {
+        optionCont.append( $('<option>', {
+            value: option,
+            text: options[option]['NAME']
+        }))
+
+    })
+    optionCont.change( (e) => {
+        let value = e.target.value
+        stateMap.resetMapLayer(map, value)
+    })
+    return
+
+}
 function loadPanes() {
     map.createPane("locationMarker")
-    map.getPane("locationMarker").style.zIndex = 400;
+    map.getPane("locationMarker").style.zIndex = 401;
     map.createPane('popup');
     map.getPane("popup").style.zIndex = 500;
     map.createPane("pointFilter")
     map.getPane("pointFilter").style.zIndex = 450;
+    map.createPane("labels")
+    map.getPane("labels").style.zIndex = 400;
+
 }
 
 function loadFilters() {
     $("input[name='layer']").click(function (e) {
         clearCurrentLayer();
+        stateLegendSelect.hide()
+        countyLegendSelect.hide()
+        legendSelectText.html('')
         switch (e.target.value) {
             case 'countyLayer':
+                legendSelectText.html('Change County Legend:')
                 countyMap.loadLayer(map)
                 currentLayer = countyMap;
+                countyLegendSelect.show()
                 break;
             case 'stateLayer':
+                legendSelectText.html('Change State Legend:')
                 stateMap.loadLayer(map)
                 currentLayer = stateMap;
+                stateLegendSelect.show()
                 break;
             case 'noLayer':
                 console.log('no layer selected')
@@ -91,20 +158,24 @@ function loadClickEvents() {
     let collapseBtn = $('#collapse-btn')
     let pointFilterBtn = $('#point-filter-btn')
     let mapQueryDiv = $('#query-container')
+    let legendSelect = $('#legendSelect')
 
-    collapseBtn.click(() => {
+/*     collapseBtn.click(() => {
+        mapQueryDiv.html('')
         handleSidebarCollapse();
-    });
+    }); */
 
     pointFilterBtn.click(() => {
         if (sideBarCollapsed) {
             handleSidebarCollapse();
         }
         if (!pointFilterMenu) {
-            pointFilterMenu = createPointFilters()
+            
+            
 
         }
         mapQueryDiv.html("")
+        pointFilterMenu = createPointFilters()
         pointFilterMenu.appendTo(mapQueryDiv)
 
 
@@ -114,20 +185,31 @@ function loadClickEvents() {
 
 function createPointFilters() {
     let div;
+    let filterArray = []
     let container = $('<div/>', {
         'class': "point-query-container",
     })
     let header = $('<div/>', {
         'class': 'point-query-header',
-        html: '<h2> Filter Points By </h2>'
+        html: '<h2> Filter Incidents By </h2>'
     });
-
+    
     header.appendTo(container)
     allowedPointFilters.forEach((property_name) => {
+        let itemContainer = $('<div>', {
+            'class': 'point-filter-item-container',
+        })
+        let btn = $('<h3>', {
+            html: property_name
+        })
         let itemDiv = $('<div/>', {
-            'class': 'point-query-items',
-            html: `<h4> ${property_name} </h4>`
+            'class': 'point-filter-items',
         });
+        btn.appendTo(itemContainer)
+        itemDiv.appendTo(itemContainer)
+        btn.on('click', () => {
+            itemDiv.toggleClass('open')
+        })
         pointFilters[property_name].forEach((property) => {
             let checkBox = $('<input/>', {
                 type: 'checkbox',
@@ -135,12 +217,24 @@ function createPointFilters() {
                 id: 'checkbox-' + property,
                 value: property,
                 html: `<label for="${property}"> ${property} </label>`,
+               
 
             })
             checkBox.change(() => {
                 filterPoints()
             })
-            pointFilter.push(checkBox[0])
+            checkBox.prop('checked', () => {
+                if (typeof(appliedFilters[property_name]) !== 'undefined') {
+                    if (appliedFilters[property_name].includes(property)) {
+                        return true
+                    }
+                    
+                    
+                    
+                    return false
+                }
+            })
+            filterArray.push(checkBox[0])
             let checkBoxLabel = $('<label/>', {
                 for: 'checkbox-' + property,
                 html: property
@@ -152,31 +246,79 @@ function createPointFilters() {
 
 
         })
-        itemDiv.appendTo(container)
-        return itemDiv;
+        itemContainer.appendTo(container)
+        return itemContainer;
 
     })
-
+    pointFilter = filterArray
     return container;
 
 }
+function getPointColor(property) {
+    if (categories.length < qualColors.length) {
+        if(!categories.includes(property)) {
+            categories.push(property)
 
+        }
+        let index = categories.indexOf(property)
+        return qualColors[index]
+    }
+    return 'undefined';
+}
 function filterPoints() {
+    map.removeControl(pointLegend)
     let currentFilter = {}
+    filterColors = {}
+    let colorIndex = 0
+    let legendDiv = '';
     pointFilter.forEach((filter) => {
         if ($(filter).prop("checked")) {
             if (typeof (currentFilter[filter.name]) === "undefined") {
                 currentFilter[filter.name] = []
+                filterColors[filter.name] = {}
 
             }
             currentFilter[filter.name].push(filter.value)
+            filterColors[filter.name][filter.value] = colorIndex
+            colorIndex += 1
         }
     })
     if (currentFilter !== {}) {
     applyPointFilter(currentFilter)
+    appliedFilters = currentFilter
+    if (colorIndex > 0) {
+        createPointLegend();
+    }
+    
 }
 }
+function createPointLegend() {
+    map.removeControl(pointLegend)
+    pointLegend.addTo(map)
+    
 
+    
+}
+pointLegend.onAdd = () => {
+    let filterKeys = Object.keys(filterColors)
+    var div = L.DomUtil.create('div', 'info legend')
+    var divHTML = `<h3> Incidents (by filter) </h3>`  + '<div class="legend-flex">'
+    filterKeys.forEach(key => {
+        divHTML += '<div class="legend-body"> <h4>' + key +'</h4>'
+        let values = Object.keys(filterColors[key])
+        values.forEach(value => {
+            divHTML += '<br> <i style="background:' + qualColors[filterColors[key][value]] + '"></i> ' + value;
+        })
+        divHTML += '</div>'
+    })
+    divHTML += '</div>'
+    div.innerHTML = divHTML
+
+    return div;
+
+
+
+}
 function applyPointFilter(filter) {
     pointLayer.eachLayer(function (layer) {
         let feature = layer.feature
@@ -187,10 +329,11 @@ function applyPointFilter(filter) {
 function stylePointFilter(filter, feature) {
     let filterKeys = Object.keys(filter)
     let style;
+    let colorIndex = 0;
     filterKeys.forEach((key) => {
         if(filter[key].includes(feature.properties[key])) {
             style = {
-                fillColor: "red",
+                fillColor: qualColors[filterColors[key][feature.properties[key]]],
                 pane: "pointFilter"
             }
         }
@@ -202,25 +345,17 @@ function stylePointFilter(filter, feature) {
     return style;
 }
 
-function handleSidebarCollapse() {
-    let collapseBtn = $('#collapse-btn')
-    sideBarCollapsed = !sideBarCollapsed
-    $('.map-query').toggleClass('collapsed')
-    if (sideBarCollapsed) {
-        collapseBtn.html("<-")
-    } else {
-        collapseBtn.html("->")
-    }
-}
 
 function loadSlider() {
     $('.slider').on('input', (e) => {
         if (queryYears) {
             console.log(e.target.value)
             currYear = e.target.value;
+            
             map.removeLayer(pointLayer)
             pointLayer = loadPointLayer();
             $('#year-text').html(`Year: ${currYear}`)
+            filterPoints();
         }
 
     });
@@ -228,7 +363,7 @@ function loadSlider() {
         queryYears = !queryYears;
         map.removeLayer(pointLayer)
         pointLayer = loadPointLayer();
-        let btnText = queryYears ? 'Show All Years' : 'Query Years'
+        let btnText = queryYears ? 'Show All Years' : 'Change Years'
         if (queryYears) {
             $('#year-text').html(`Year: ${currYear}`)
             $('.slider').css({
@@ -265,10 +400,14 @@ function createMap() {
 
 
     //add OSM base tilelayer
-    map = L.map('map').setView([37.8, -96], 5);
-    L.tileLayer('https://tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token=iLuzn3MqdlZEZksWVEVXqX3SU6o5AWsC94JX05GU2IXGAFxHqFeTqHzSE6LwgKAJ', {}).addTo(map);
-    map.attributionControl.addAttribution("<a href=\"https://www.jawg.io\" target=\"_blank\">&copy; Jawg</a> - <a href=\"https://www.openstreetmap.org\" target=\"_blank\">&copy; OpenStreetMap</a>&nbsp;contributors")
-    //call getData function
+    map = L.map('map', {
+        minZoom: 5,
+        maxZoom: 7,
+    }).setView([37.8, -96], 5);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+        attribution: '©OpenStreetMap, ©CartoDB'
+}).addTo(map);
+   
 };
 
 
@@ -278,15 +417,36 @@ async function getData(map) {
         pointLayer = loadPointLayer();
 
     });
-    $.getJSON('data/counties_election.geojson').then(function (response) {
+    $.getJSON('data/counties.json').then(function (response) {
 
         countyMap.storeData(response)
     });
-    $.getJSON('data/STATE_LAYER_WGS84MIN.json').then(function (response) {
+    //state layer, just to show state borders ! interactive:false
+    $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
 
+        L.geoJson(response, {
+            style: {
+                fillOpacity:0,
+                interactive:false,
+                weight:2,
+                color:"#000",
+                pane:"labels"
+            },
+            onEachFeature: function (feature, layer) {
+                layer.on('mouseover', () => {
+                    console.log(feature)
+                })
+            }
+    }).addTo(map);
+});
+    $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
+        
         stateMap.storeData(response)
+
         stateMap.loadLayer(map)
         currentLayer = stateMap;
+        stateMap.setParent(this)
+        
     });
 };
 
@@ -302,17 +462,19 @@ function loadPointLayer() {
         },
         onEachFeature: (feature, layer) => {
             let cityState = feature.properties.city_state;
-            layer.bindPopup(`<h2> ${feature.properties.city_state}</h2> <p> Number of incidents: ${feature.properties.place} </p> <p> ${feature.properties.date} </p>`, {
+            /* layer.bindPopup(`<h2> ${feature.properties.city_state}</h2> <p> Number of incidents: ${feature.properties.place} </p> <p> ${feature.properties.date} </p>`, {
                 closeButton: false,
                 className: "popup",
                 pane: 'popup'
-            });
+            }); */
             layer.on('mouseover', function () {
-                layer.openPopup(),
-                    layer._popup.setContent(`<h2> ${feature.properties.city_state}</h2> <p> Number of incidents: ${pointCities[cityState].length} </p>`)
+/*                 layer.openPopup(),
+                    layer._popup.setContent(`<h2> ${feature.properties.city_state}</h2> <p> Number of incidents: ${pointCities[cityState].length} </p>`) */
+                displayText(feature.properties.city_state,`<p> Number of incidents: <b> ${pointCities[cityState].length} </b> <br> <br> <b> Click </b>for more info</p>` )
             });
             layer.on('mouseout', function () {
-                layer.closePopup();
+                /* layer.closePopup(); */
+                hideBox();
             });
             layer.on('click', () => {
 
@@ -322,6 +484,7 @@ function loadPointLayer() {
                 html += "</div>"
                 mapQueryDiv.html(html)
                 if (sideBarCollapsed) {
+                    console.log(sideBarCollapsed)
                     handleSidebarCollapse();
 
                 }
@@ -387,14 +550,15 @@ function loadCard(properties) {
 }
 
 function stylePoints(feature) {
+    let pointColor = getPointColor(feature.properties[selectedFilter])
     var geojsonMarkerOptions = {
-        radius: 4,
-        fillColor: '#FFF',
+        radius: 5,
+        fillColor:  '#FFF',
         color: "#000",
         weight: 2,
         opacity: 1,
-        fillOpacity: 0.8,
-        pane: "locationMarker",
+        fillOpacity: 1.0,
+        pane: 'locationMarker',
     };
     return geojsonMarkerOptions;
 }

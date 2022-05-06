@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap');
 html,
 body {
     background-color: #F6F6F4;
@@ -7,6 +7,7 @@ body {
     width: 100%;
     height: 100%;
     margin: 0;
+
     font-family: 'Quicksand', sans-serif;
     font-size: 1rem;
     overflow-x: hidden;
@@ -51,6 +52,7 @@ body {
     background-color: rgb(255, 255, 255);
     transition-duration: 200ms;
     text-align: center;
+    
 
 
 
@@ -100,6 +102,7 @@ body {
     border-right: 2px solid black;
     background-color: #F6F6F4;
     z-index: 12000;
+    min-width:100px;
 }
 
 .map-filters input[type="radio"] {
@@ -292,6 +295,7 @@ button:hover {
     box-shadow: none !important;
     font-family: 'Quicksand', sans-serif;
     box-shadow: none;
+    
 }
 
 .popup .leaflet-popup-tip {
@@ -303,7 +307,8 @@ button:hover {
 .popup .leaflet-popup-content-wrapper {
     background: #252323;
     color: #ffffff;
-    box-shadow: none;
+    box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
+    transform: translateY(-10px);
 }
 
 .legend {
@@ -369,6 +374,7 @@ button:hover {
     position: sticky;
     top: 0;
     width: 100%;
+    
     margin: auto;
     text-align: center;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -396,17 +402,122 @@ button:hover {
     color:rgba(0, 0, 0, 0.466);
     user-select: none;
     margin:auto;
+    text-transform: capitalize;
     
 }
-.point-filter-item-container:hover + .test {
-    
+.point-filter-item-container h3 {
+    color: #994343;
+    transition-duration: 0.3s;
+    background-color:#F6F6F4;
+    padding:10px;
 }
-.point-filter-item-container h3:hover {
-    color: #070000;
+.point-filter-item-container:hover h3 {
+    color:#F6F6F4;
+    background-color:#555;
 }
 .point-filter-items {
-    display:table;
+    display: flex;
+    flex-direction: column;
+    text-transform: capitalize;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding:10px;
+    max-height: 0px;
+    /* display: none; */
+    transition: 0.4s;
+    visibility: hidden;
 }
-.test {
+input[type="checkbox"]  {
+    display: none;
+ }
+ .point-filter-items label {
+     color:#555;
+     user-select: none;
+     width:80%;
+     padding:5px;
+     margin:auto;
+     background-color: #F6F6F4;
+ }
+ .point-filter-items label:hover {
+     color:#0a0a0a;
+     font-weight: 500;
+     background-color: #0000002a;
+ }
+ input[type="checkbox"]:checked + label{
+     font-weight: 800;
 
+ }
+ .open {
+     max-height: 800px;
+     visibility: visible;
+     display: flex;
+     transition: 0.4s;
+ }
+#legendSelect {
+ width: 50%;
+}
+.legend-select-container {
+    display: flex;
+    flex-direction: column;
+    padding:10px;
+    background-color: #F6F6F4;
+    user-select: none;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    height: 100%;
+    justify-items: stretch;
+    align-items: stretch;
+    justify-content: center;
+    
+      
+}
+.state-info-container li{
+    list-style-type: none;
+    width:90%;
+    text-align: right;
+
+}
+.state-info-container li b {
+    text-align: left;
+    float:left;
+}
+.state-info-container h3 {
+    width:100%;
+    padding:10px;
+    background-color:#555;
+    color:white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+svg.leaflet-zoom-animated > g > path {
+    transition-property: radius, fill-color, fill-opacity, stroke, stroke-opacity, stroke-width;
+    transition-duration: 0.4s;
+ }
+ .stroke-width {
+   transition-duration: 0.4s;
+}
+.leaflet-states-pane {
+    user-select: none;
+    
+}
+.legend-flex {
+    display: flex;
+    flex-direction: row;
+}
+.legend-body {
+    padding:10px;
+    text-transform: capitalize;
+}
+.mouse-hover-window {
+    position: absolute;
+    padding:5px 15px 5px 15px;
+    border-radius: 5px;
+    background-color: #0a0a0a;
+    color: #F6F6F4;
+    width: fit-content;
+    z-index: 90000;
+    user-select: none;
+    margin-left:20px;
+    margin-top: 40px;
+    font-size: small;
+    transition-duration: 0.2s;
 }

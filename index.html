@@ -10,11 +10,13 @@
     <link rel="stylesheet" href="lib/leaflet.css" />
     <script src="lib/leaflet-src.js"></script>
     <script src="lib/jquery-3.6.0.js"> </script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
 </head>
 
 <body>
-
-
+    <div class="mouse-hover-window" id="mouse-info-box">
+        Hello
+    </div>
     <div id="screenFill">
         
         <div class="header"> <h2>Swastika Counter Map Dashboard</h2></div>
@@ -34,23 +36,44 @@
                     <h3> Layers</h3>
 
                 </div>
+                <div class="sidebar">
+                    <img src="svg/map_glass.svg" alt="">
+                    <div class="sidebar-content">
+                        <div class="legend-select-container">
+                            <b id="legend-select-text"> Change State Map Legend: </b>
+                        <select name="legend-select-state" id="legend-select-state">
+                            
+                        </select>
+                        <select name="legend-select-county" id="legend-select-county">
+                            
+                            
+                        </select>
+                    </div>
+                    </div>
+                    <h3>Change Legend</h3>
+                </div>
                     <button id="point-filter-btn">
                         <img src="svg/location.svg" alt="">
-                        <h3> Filter Points</h3>
+                        <h3> Filter Incidents</h3>
     
                     </button>
 
 
+
             </div>
+
             <div class="map-container">
                 <div class="map-header">
                     <h1 id="year-text"> Year: 2016-2021</h1>
 
                 </div>
-                <div id="map"> </div>
+                <div id="map"> 
+                    
+                </div>
+
                 <div class="time-slider">
                     <input type="range" min="2016" max="2021" value="2016" class="slider" id="myRange">
-                    <button id="show-all"> Query Years </button>
+                    <button id="show-all"> Change Years </button>
                 </div>
                 <div class="infoBox">
                     <h3>Hover over a county</h3>
@@ -106,6 +129,7 @@
 
     
     <script type = "module" src="scripts/map.js"></script>
+    <script src="scripts/components/InfoHover.js"></script>
 </body>
 
 </html>

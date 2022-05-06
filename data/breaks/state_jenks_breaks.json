@@ -1,0 +1,210 @@
+{
+    "POP_TOTAL": {
+        "JENK_BREAKS": [563626, 3046355, 6724540, 12830632, 25145561, 37253956],
+        "QUAN_BREAKS": [563626, 1334749, 2998920, 5194033, 8633720],
+        "MIN": 563626,
+        "MAX": 37253956,
+        "MEAN": 6009063.980769231,
+        "NAME": "Total Population"
+    },
+    "POP_MALE": {
+        "JENK_BREAKS": [284222, 1508319, 3349707, 6292276, 12472280, 18517830],
+        "QUAN_BREAKS": [284222, 656293, 1468071, 2587543, 4208876],
+        "MIN": 284222,
+        "MAX": 18517830,
+        "MEAN": 2953201.8653846155,
+        "NAME": "Total Male Population"
+    },
+    "POP_FEMALE": {
+        "JENK_BREAKS": [276189, 1538036, 3381001, 6538356, 12673281, 18736126],
+        "QUAN_BREAKS": [276189, 678455, 1530848, 2606489, 4424843],
+        "MIN": 276189,
+        "MAX": 18736126,
+        "MEAN": 3055862.1153846155,
+        "NAME": "Total Female Population"
+    },
+    "POP_WHITE": {
+        "JENK_BREAKS": [231471, 1786688, 4089202, 7803120, 14109162, 21453934],
+        "QUAN_BREAKS": [231471, 1241834, 2517364, 3977335, 5727322],
+        "MIN": 231471,
+        "MAX": 21453934,
+        "MEAN": 4353430.096153846,
+        "NAME": "Total White Population"
+    },
+    "POP_BLACK": {
+        "JENK_BREAKS": [4027, 218626, 693391, 1551399, 2299072, 3073800],
+        "QUAN_BREAKS": [4027, 31939, 227192, 456856, 1406217],
+        "MIN": 4027,
+        "MAX": 3073800,
+        "MEAN": 757515.7115384615,
+        "NAME": "Total Black Population"
+    },
+    "POP_NATIVE": {
+        "JENK_BREAKS": [2079, 36591, 71817, 122110, 193222, 362801],
+        "QUAN_BREAKS": [2079, 11672, 21763, 32115, 69677],
+        "MIN": 2079,
+        "MAX": 362801,
+        "MEAN": 56770.9038461538,
+        "NAME": "Total Native Population"
+    },
+    "POP_ASIAN": {
+        "JENK_BREAKS": [4426, 141263, 349768, 725726, 1420244, 4861007],
+        "QUAN_BREAKS": [4426, 26235, 54271, 137642, 343041],
+        "MIN": 4426,
+        "MAX": 4861007,
+        "MEAN": 282328.5192307692,
+        "NAME": "Total Asian Population"
+    },
+    "POP_HISP": {
+        "JENK_BREAKS": [9208, 631825, 2027578, 4223806, 9460921, 14013719],
+        "QUAN_BREAKS": [9208, 74873, 200524, 417697, 842975],
+        "MIN": 9208,
+        "MAX": 14013719,
+        "MEAN": 1041654.7884615385,
+        "NAME": "Total Hispanic Population"
+    },
+    "AVG_HH_SIZ": {
+        "JENK_BREAKS": [2.11, 2.36, 2.49, 2.59, 2.75, 3.1],
+        "QUAN_BREAKS": [2.11, 2.44, 2.48, 2.516, 2.626],
+        "MIN": 2.11,
+        "MAX": 3.1,
+        "MEAN": 2.5228846154,
+        "NAME": "Average Household Size"
+    },
+    "AVG_FAM_SI": {
+        "JENK_BREAKS": [2.83, 2.91, 3.02, 3.13, 3.31, 3.56],
+        "QUAN_BREAKS": [2.83, 3.0, 3.02, 3.06, 3.17],
+        "MIN": 2.83,
+        "MAX": 3.56,
+        "MEAN": 3.0776923077,
+        "NAME": "Average Family Size"
+    },
+    "PCT_FEMALE": {
+        "JENK_BREAKS": [0.48, 0.49, 0.5, 0.509, 0.517, 0.528],
+        "QUAN_BREAKS": [0.48, 0.502, 0.505, 0.51, 0.513],
+        "MIN": 0.48,
+        "MAX": 0.528,
+        "MEAN": 0.5073076923,
+        "NAME": "Percent Female"
+    },
+    "PCT_MALE": {
+        "JENK_BREAKS": [0.472, 0.479, 0.49, 0.498, 0.505, 0.52],
+        "QUAN_BREAKS": [0.472, 0.487, 0.49, 0.495, 0.498],
+        "MIN": 0.472,
+        "MAX": 0.52,
+        "MEAN": 0.4926923077,
+        "NAME": "Percent Male"
+    },
+    "PCT_WHITE": {
+        "JENK_BREAKS": [0.247, 0.385, 0.626, 0.73, 0.843, 0.953],
+        "QUAN_BREAKS": [0.247, 0.67, 0.738, 0.817, 0.862],
+        "MIN": 0.247,
+        "MAX": 0.953,
+        "MEAN": 0.7598846154,
+        "NAME": "Percent White"
+    },
+    "PCT_BLACK": {
+        "JENK_BREAKS": [0.004, 0.052, 0.124, 0.215, 0.37, 0.507],
+        "QUAN_BREAKS": [0.004, 0.019, 0.058, 0.113, 0.166],
+        "MIN": 0.004,
+        "MAX": 0.507,
+        "MEAN": 0.1114615385,
+        "NAME": "Percent Black"
+    },
+    "POP_JEW_AD": {
+        "JENK_BREAKS": [0, 45000, 153700, 361700, 699800, 1061000],
+        "QUAN_BREAKS": [0, 6620, 13900, 35120, 88900],
+        "MIN": 0.0,
+        "MAX": 1061000.0,
+        "MEAN": 93225.0,
+        "NAME": "Jewish Adult Population"
+    },
+    "POP_JEW_TO": {
+        "JENK_BREAKS": [0, 154600, 348000, 778100, 1173600, 1598100],
+        "QUAN_BREAKS": [0, 10700, 22660, 59139, 147360],
+        "MIN": 0.0,
+        "MAX": 1598100.0,
+        "MEAN": 146742.3076923077,
+        "NAME": "Total Jewish Population"
+    },
+    "PCT_JEW_AD": {
+        "JENK_BREAKS": [0, 0.005, 0.011, 0.019, 0.041, 0.055],
+        "QUAN_BREAKS": [0.0, 0.003, 0.006, 0.009, 0.017],
+        "MIN": 0.0,
+        "MAX": 0.055,
+        "MEAN": 0.0112692308,
+        "NAME": "Percent Jewish Adults"
+    },
+    "PCT_JEW_TO": {
+        "JENK_BREAKS": [0, 0.009, 0.018, 0.032, 0.051, 0.084],
+        "QUAN_BREAKS": [0.0, 0.005, 0.008, 0.015, 0.027],
+        "MIN": 0.0,
+        "MAX": 0.084,
+        "MEAN": 0.0179615385,
+        "NAME": "Percent Jewish Total"
+    },
+    "NUMPOINTS": {
+        "JENK_BREAKS": [0, 14, 31, 79, 135, 211],
+        "QUAN_BREAKS": [0, 4, 7, 17, 30],
+        "MIN": 0,
+        "MAX": 211,
+        "MEAN": 25.5961538462,
+        "NAME": "Reported Incidents (2016-2021)"
+    },
+    "POP_DENS": {
+        "JENK_BREAKS": [1.208, 107.391, 395.229, 797.908, 1130.063, 8848.868],
+        "QUAN_BREAKS": [1.208, 35.637, 69.638, 149.813, 280.213],
+        "MIN": 1.208,
+        "MAX": 8848.868,
+        "MEAN": 371.1104615385,
+        "NAME": "Population Density (per sq. mi)"
+    },
+    "COUNT2016": {
+        "JENK_BREAKS": [0, 7, 18, 32, 47, 79],
+        "QUAN_BREAKS": [0, 4, 9, 17, 30],
+        "MIN": 0,
+        "MAX": 79,
+        "MEAN": 17.6346153846,
+        "NAME": "Hate Group Count: 2016"
+    },
+    "COUNT2017": {
+        "JENK_BREAKS": [0, 6, 15, 26, 48, 75],
+        "QUAN_BREAKS": [0, 3, 10, 17, 30],
+        "MIN": 0,
+        "MAX": 75,
+        "MEAN": 18.25,
+        "NAME": "Hate Group Count: 2017"
+    },
+    "COUNT2018": {
+        "JENK_BREAKS": [0, 7, 18, 31, 47, 83],
+        "QUAN_BREAKS": [0, 4, 10, 19, 31],
+        "MIN": 0,
+        "MAX": 83,
+        "MEAN": 19.4423076923,
+        "NAME": "Hate Group Count: 2018"
+    },
+    "COUNT2019": {
+        "JENK_BREAKS": [0, 10, 22, 44, 67, 88],
+        "QUAN_BREAKS": [0, 3, 9, 18, 29],
+        "MIN": 0,
+        "MAX": 88,
+        "MEAN": 17.9615384615,
+        "NAME": "Hate Group Count: 2019"
+    },
+    "COUNT2020": {
+        "JENK_BREAKS": [0, 7, 16, 26, 37, 72],
+        "QUAN_BREAKS": [0, 3, 9, 16, 24],
+        "MIN": 0,
+        "MAX": 72,
+        "MEAN": 16.0192307692,
+        "NAME": "Hate Group Count: 2020"
+    },
+    "COUNT2021": {
+        "JENK_BREAKS": [0, 6, 14, 24, 35, 65],
+        "QUAN_BREAKS": [0, 4, 9, 13, 20],
+        "MIN": 0,
+        "MAX": 65,
+        "MEAN": 14.0,
+        "NAME": "Hate Group Count: 2021"
+    }
+}
