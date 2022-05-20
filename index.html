@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="lib/leaflet.css" />
     <script src="lib/leaflet-src.js"></script>
     <script src="lib/jquery-3.6.0.js"> </script>
-    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
 <body>
@@ -19,7 +19,7 @@
     </div>
     <div id="screenFill">
         
-        <div class="header"> <h2>Swastika Counter Map Dashboard</h2></div>
+        <!-- <div class="header"> <h2>Swastika Counter Map Dashboard</h2></div> -->
         <div class="container">
             
             <div class="map-filters">
@@ -71,10 +71,19 @@
                     
                 </div>
 
-                <div class="time-slider">
+<!--                 <div class="time-slider">
                     <input type="range" min="2016" max="2021" value="2016" class="slider" id="myRange">
                     <button id="show-all"> Change Years </button>
-                </div>
+                </div> -->
+                <div class="time-slider">
+                    <div class="time-slider-tooltip" id="tooltip-from">
+                    
+                    </div>
+                    <div class="time-slider-tooltip" id="tooltip-to">
+                    
+                    </div>
+                <svg id="time-query" width="800" height="52"></svg>
+            </div>
                 <div class="infoBox">
                     <h3>Hover over a county</h3>
                 </div>
@@ -88,9 +97,9 @@
             </div>
 
         </div>
-
+<!--         <div id="garry" class="mod"></div> -->
     </div>
-    <ul> Filter <b>map</b> properties such as:
+<!--     <ul> Filter <b>map</b> properties such as:
         <li>County (or state?) Election Map (2016/2020?)</li>
         <li>Hate map data from Southern Poverty Law Center</li>
         <li>Choropleth of amount of incidents by state</li>
@@ -124,7 +133,7 @@
             <h3>Filter incidents by: 
         </h3>
         </div>
-    </div>
+    </div> -->
 
 
     

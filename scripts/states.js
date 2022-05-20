@@ -21,7 +21,7 @@ let stateIncidentLegend = {
     quantiles: [0, 12, 31, 79, 135]
 }
 let selectedLegend = 'POP_JEW_TO';
-let colors_5 = ['#f2f0f7','#cbc9e2','#9e9ac8','#756bb1','#54278f']
+let colors_5 = ['#c6e4db', '#a9c8ca', '#8cadb9', '#6f91a8', '#527697']
 let legends = {"jew_pop":jewPopLegend, "incidents": stateIncidentLegend}
 function setParent(obj) {
     parent = obj;
@@ -109,7 +109,7 @@ function style(feature) {
         weight: 1.0,
         opacity: 1.0,
         color: 'black',
-        fillOpacity: 1,
+        fillOpacity: 1.0,
         fillColor: getColorProperty(feature.properties[property])    
     }
 }
@@ -117,8 +117,6 @@ function highlightFeature(e) {
     var layer = e.target;
      layer.setStyle(
         {
-            color:"white",
-            weight: 4.0,
             opacity:0.7,
             fillOpacity:0.8,
         }
