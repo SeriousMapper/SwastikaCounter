@@ -12,7 +12,11 @@ body {
     font-size: 1rem;
     overflow-x: hidden;
 }
-
+img {
+    width:95%;
+    padding:2%;
+    height:auto;
+}
 #screenFill {
     height: 100%;
     width: 100%;
@@ -504,6 +508,7 @@ input[type="checkbox"]  {
 #legendSelect {
  width: 50%;
 }
+
 .legend-select-container {
     display: flex;
     flex-direction: column;
