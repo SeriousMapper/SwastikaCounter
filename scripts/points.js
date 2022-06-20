@@ -31,6 +31,9 @@ async function loadLayer(global_map) {
     map = global_map
     L.svg({clickable:true}).addTo(map)
     pointLayer = d3Layer(pointSingular);
+    let init_brush = x.domain().map(interval.round)
+    d3.select(".brush").call(brush.move, init_brush.map(x));
+    showSliderTooltip(init_brush.map(x))
 }
 function createPointFeatureDictionary() { //subset of the point geojson, used to concactenate points dict[point] = [...incident]
     pointGeoJSON.features.forEach(feature => {
@@ -88,16 +91,19 @@ function loadFilterMenu() {
     let container = $('<div/>', {
         'class': "point-query-container",
     })
+    let pointFilterWindow = $('<div/>', {
+        'class': "point-filter-window",
+    })
     let header = $('<div/>', {
         'class': 'point-query-header',
         html: '<h2> Filter Incidents By </h2>'
     });
     let filterList = $('<div>', {
         'class': 'point-query-filters',
-        html: 'Applied Filters:'
+        html: 'Applied Filters:',
     })
     header.appendTo(container)
-    
+    pointFilterWindow.appendTo(container)
     container.appendTo(mapQueryDiv)
     availFilters.forEach( filter => {
         let group = d3.group(pointGeoJSON.features, d => d.properties[filter])
@@ -173,7 +179,7 @@ function loadFilterMenu() {
             checkBox.appendTo(itemDiv)
             checkBoxLabel.appendTo(itemDiv)
         })
-        itemContainer.appendTo(container)
+        itemContainer.appendTo(pointFilterWindow)
     })
     filterList.appendTo(container)
 }
@@ -274,7 +280,7 @@ function highlightPoints(filter, property) {
         return filterCityGroupKeys.includes(d.properties.city_state)
     })
     .attr('opacity', 1)
-    .attr('fill', 'gold')
+    .attr('fill', 'yellow')
     .transition()
     .duration(200)
     .attr("r", function(d) {
@@ -347,7 +353,7 @@ function filterPoints() {
 
 }
 function d3Layer(data) {
-    map.getPane("overlayPane").style.zIndex = 401;
+    map.getPane("locationMarker").style.zIndex = 600;
     const overlay = d3.select(map.getPanes().overlayPane)
     console.log(map.getPanes().locationMarker)
 
@@ -573,11 +579,12 @@ context.append("g")
     .call(brush)
 const formatMonth = d3.timeFormat('%b-%Y');
 const interval = d3.timeMonth.every(1)
+
 function brushed(event) {
     
     if (!event.sourceEvent) return;
     if (!event.selection) return;
-    
+   
     const d0 = event.selection.map(x.invert);
     const d1 = d0.map(interval.round);
 
@@ -586,11 +593,8 @@ function brushed(event) {
       d1[0] = interval.floor(d0[0]);
       d1[1] = interval.offset(d1[0]);
     }
-    
     d3.select(this).call(brush.move, d1.map(x));
     showSliderTooltip(d1.map(x))
-    
-
   return timeQuery.node();
   
 }

@@ -26,12 +26,13 @@
                 <div class="sidebar">
                     <img src="svg/layer-icon.svg" alt="">
                     <div class="sidebar-content">
+
+                        <input type="radio" id="county-layer" name="layer" value="countyLayer">
+                        <label for="county-layer">Electoral County Map</label>
+                        <input type="radio" id="state-layer" name="layer" value="stateLayer" checked="checked">
+                        <label for="state-layer">Demographic State Map</label> 
                         <input type="radio" id="no-layer" name="layer" value="noLayer">
                         <label for="no-layer">Clear Layers</label>
-                        <input type="radio" id="county-layer" name="layer" value="countyLayer">
-                        <label for="county-layer">County Layer</label>
-                        <input type="radio" id="state-layer" name="layer" value="stateLayer" checked="checked">
-                        <label for="state-layer">State Layer</label> 
                     </div>
                     <h3> Layers</h3>
 
@@ -57,10 +58,19 @@
                         <h3> Filter Incidents</h3>
     
                     </button>
-
-
+                    <div class="sidebar">
+                        <img src="svg/share.svg" alt="">
+                        <h3> Share</h3>
+    
+                    </div>
+                    <div class="sidebar">
+                        <img src="svg/faq.svg" alt="">
+                        <h3> Help </h3>
+    
+                    </div>
 
             </div>
+
 
             <div class="map-container">
                 <div class="map-header">
@@ -76,6 +86,7 @@
                     <button id="show-all"> Change Years </button>
                 </div> -->
                 <div class="time-slider">
+                    
                     <div class="time-slider-tooltip" id="tooltip-from">
                     
                     </div>
@@ -83,6 +94,7 @@
                     
                     </div>
                 <svg id="time-query" width="800" height="52"></svg>
+                
             </div>
                 <div class="infoBox">
                     <h3>Hover over a county</h3>

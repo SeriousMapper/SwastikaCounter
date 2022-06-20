@@ -97,19 +97,20 @@ function createMap() {
         minZoom: 5,
         maxZoom: 9,
     }).setView([37.8, -96], 5);
-    L.tileLayer('https://tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token=iLuzn3MqdlZEZksWVEVXqX3SU6o5AWsC94JX05GU2IXGAFxHqFeTqHzSE6LwgKAJ', {}).addTo(map);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {}).addTo(map);
 
 };
 function loadPanes() {
     map.createPane("locationMarker")
-    map.getPane("locationMarker").style.zIndex = 401;
+    map.getPane("locationMarker").style.zIndex = 510;
     map.createPane('popup');
     map.getPane("popup").style.zIndex = 500;
     map.createPane("pointFilter")
     map.getPane("pointFilter").style.zIndex = 450;
     map.createPane("labels")
-    map.getPane("labels").style.zIndex = 400;
-
+    map.getPane("labels").style.zIndex = 500;
+    map.createPane("map")
+    map.getPane("map").style.zIndex = 500;
 };
 
 async function getData(map) {
@@ -137,15 +138,11 @@ async function getData(map) {
                 style: {
                     fillOpacity: 0,
                     interactive: false,
-                    weight: 1.0,
+                    weight: 0.0,
                     color: "#000",
                     pane: "labels"
-                },
-                onEachFeature: function (feature, layer) {
-                    layer.on('mouseover', () => {
-                        console.log(feature)
-                    })
                 }
+
             }).addTo(map);
         })).then(
     $.getJSON("data/swastika_geocoded.geojson").then(async function (response) {

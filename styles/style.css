@@ -56,16 +56,18 @@ img {
     background-color: rgb(255, 255, 255);
     transition-duration: 200ms;
     text-align: center;
+    height:100%;
     
 
 }
 
 .sidebar img {
-    width: 100%;
+    width: 60%;
     height: auto;
     margin: auto;
     align-self: center;
     opacity: 50%;
+    transition-duration: 1s;
 }
 
 .sidebar:hover img {
@@ -93,7 +95,7 @@ img {
     padding-left: 5px;
     top: 0%;
     width: fit-content;
-    height: 100%;
+    margin: auto;
     color: black;
     transform: translateX(-200px);
     transition: opacity 0.2s ease-in, transform 0.2s linear;
@@ -105,6 +107,13 @@ img {
     background-color: #F6F6F4;
     z-index: 12000;
     min-width:100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: stretch;
+    margin: auto;
+    font-size:normal;
 }
 
 .map-filters input[type="radio"] {
@@ -246,37 +255,45 @@ img {
     user-select: none;
 }
 .time-slider svg {
-    background-color: #252323;
+    background-color: #f6f6f4b7;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 3px inset;
     padding:20px;
     border-radius: 10px;
+    opacity: 1.0;
     user-select: none;
 }
 .time-slider svg .domain{
       stroke: #333333;
+      stroke-width: 2px;
+      fill: #0a0a0a21;
 }
 .time-slider svg .tick line {
     stroke: #828181;
 }
 .time-slider svg .tick text {
-    fill: #828181;
+    fill: #141414;
 }
 .time-slider svg .handle {
-      fill: #A9E806;
+      fill: #2c7dd8;
       stroke:white;
       stroke-width: 1px;
+      width:10px;
+      border-radius: 50px;
 }
 .time-slider svg .selection {
-      fill: #A9E806;
+      fill: #028cdb;
+      
       fill-opacity: 1;
-      stroke: none;
+      
+      stroke: rgb(228, 240, 255);
  }
  .time-slider-tooltip {
      width:100px;
      pointer-events: none;
-     background-color: #252323;
+     background-color: #F6F6F4;
      border-radius: 10px;
-     font-size: small;
-     color:#bebebe;
+     box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px inset;
+     color:#2e2a2a;
      position: absolute;
      top:-20px;
      text-align: center;
@@ -291,8 +308,8 @@ img {
 .infoBox {
     position: absolute;
     width: 15%;
-    background-color: #252323c4;
-    color: white;
+    background-color: #F6F6F4;
+    color: #2523239d;
     margin: 10px;
     padding: 10px;
     top: 0;
@@ -300,6 +317,11 @@ img {
     z-index: 314159;
     border-radius: 10px;
     transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 4px inset;
 
 }
 
@@ -405,8 +427,9 @@ circle {
     top: 0;
     bottom: 0;
     width: 100%;
-    overflow-y: scroll;
     overflow-x: hidden;
+    display:flex;
+    flex-direction: column;
     scrollbar-color: rgb(129, 129, 129) #00000050;
 }
 
@@ -416,34 +439,47 @@ circle {
 
 .point-query-header {
     position: sticky;
-    top: 0;
     width: 100%;
-    
-    margin: auto;
+    flex-grow: 0;
+    margin: 0;
     text-align: center;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     background-color: #000000af;
     color: white;
     padding: 4px;
     user-select: none;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+.point-filter-window {
+    width:100%;
+    flex-grow: 2;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .point-query-filters {
-    position: sticky;
     bottom:0;
     height: fit-content;
     width:100%;
-    background:#33333357;
+    background:#181717ce;
+    border-radius: 4px;
+    padding:10px;
     text-align: left;
+    color:#F6F6F4;
+    box-shadow: 0px 0 10px rgba(0, 0, 0, 0.8);
+    
 }
 #point-filter-btn {
     width:100%;
     margin:0;
     background-color: #ffffff;
-    color:black;
-    opacity: 80%;
+    color: #252323;
+    opacity: 70%;
 }
 #point-filter-btn img {
-    width:50px;
+    width: 40%;
 }
 #point-filter-btn:hover{
     opacity: 100%;
@@ -458,7 +494,7 @@ circle {
     
 }
 .point-filter-item-container h3 {
-    color: #994343;
+    color: #555;
     transition-duration: 0.3s;
     background-color:#F6F6F4;
     padding:10px;
@@ -471,13 +507,14 @@ circle {
     display: flex;
     flex-direction: column;
     text-transform: capitalize;
-    overflow-y: auto;
     overflow-x: hidden;
     padding:10px;
     max-height: 0px;
+    width:100%;
     /* display: none; */
     transition: 0.4s;
     visibility: hidden;
+    overflow-y: hidden;
 }
 input[type="checkbox"]  {
     display: none;
@@ -485,15 +522,17 @@ input[type="checkbox"]  {
  .point-filter-items label {
      color:#555;
      user-select: none;
-     width:80%;
-     padding:5px;
+     width:90%;
      margin:auto;
      background-color: #F6F6F4;
+     transition: 0.2s all;
+     padding-top:10px;
+     padding-bottom: 10px;
  }
  .point-filter-items label:hover {
-     color:#0a0a0a;
+     color:#fff9f9;
      font-weight: 500;
-     background-color: #0000002a;
+     background-color: #0000007e;
  }
  input[type="checkbox"]:checked + label{
      font-weight: 800;

@@ -82,7 +82,7 @@ function getColor(d) {
                             d > -0.750 ? '#5295CC' :
                                             '#1375B7';
 }
-function processResultColor(property, colors) {
+function processResultColor(property, colors) { // !!! Solely for the legend
     let prop = property
     let color = "transparent"
     for(let i=0; i<breaks.length; i++) {
@@ -92,16 +92,23 @@ function processResultColor(property, colors) {
     }
     return color;
 }
-function getElectionColor(feature) {
-    let color = "transparent"
-    color = processResultColor(feature.properties[`${selectedYear}_PCT_GOP`], gopColors)
-    if (color === 'transparent') {
-        color = processResultColor(feature.properties[`${selectedYear}_PCT_DEM`], demColors)
+function getElectionColor(feature) { /// For leaflet layer
+    let prop_gop = feature.properties[`${selectedYear}_PCT_GOP`]
+    let prop_dem = feature.properties[`${selectedYear}_PCT_DEM`]
+    let colors = demColors
+    let prop = prop_dem
+    if(prop_gop > prop_dem) {
+        colors = gopColors
+        prop = prop_gop
     }
+    let color = "transparent"
+    for(let i=0; i<breaks.length; i++) {
+        if(prop >= breaks[i]) {
+            color = colors[i]
+        }
+    }
+    return color;
     
-    
-
-    return color
 
 }
 function style(feature) {

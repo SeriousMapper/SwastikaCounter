@@ -7,7 +7,7 @@ let map_layer;
 let data;
 let parent;
 infoBox.css({ visibility: "visible"})
-let queryable = ['POP_JEW_TO']
+let queryable = ['PCT_JEW_TO']
 let breaksData;
 let quantiles = {}
 let jewPopLegend = {
@@ -20,7 +20,7 @@ let stateIncidentLegend = {
     property:"NUMPOINTS",
     quantiles: [0, 12, 31, 79, 135]
 }
-let selectedLegend = 'POP_JEW_TO';
+let selectedLegend = 'PCT_JEW_TO';
 let colors_5 = ['#c6e4db', '#a9c8ca', '#8cadb9', '#6f91a8', '#527697']
 let legends = {"jew_pop":jewPopLegend, "incidents": stateIncidentLegend}
 function setParent(obj) {
@@ -110,7 +110,7 @@ function style(feature) {
         opacity: 1.0,
         color: 'black',
         fillOpacity: 1.0,
-        fillColor: getColorProperty(feature.properties[property])    
+        fillColor: getColorProperty(feature.properties[property]),
     }
 }
 function highlightFeature(e) {
