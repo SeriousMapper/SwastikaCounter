@@ -191,7 +191,7 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
     console.log(map)
-    map.fitBounds(e.target.getBounds());
+   // map.fitBounds(e.target.getBounds());
     loadCensusData(e.target.feature)
 }
 

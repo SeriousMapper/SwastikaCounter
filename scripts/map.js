@@ -52,7 +52,7 @@ window.onload = () => {
 }
 
 async function initialize() {
-
+    
     /* Perform initial hiding  and declaration of page objects */
     infoBox = $('.infoBox')
     infoBox.css({
@@ -66,7 +66,9 @@ async function initialize() {
 
 
     createMap(); // creates leaflet map
-    loadPanes(); // creates panes (for z-indices) for leaflet map
+
+    loadPanes();
+    // creates panes (for z-indices) for leaflet map
     addCountyMapOptions();
     await addStateMapOptions(); //gets JSON with breaks and variables for statemap
     await getData(map) // asynchronous get data (gets data of state, county and point map)
@@ -77,6 +79,7 @@ async function initialize() {
     loadClickEvents(); //click event functions
     console.log(categories)
     countyLegendSelect.hide()
+    
 
 
 
@@ -102,52 +105,62 @@ function createMap() {
 };
 function loadPanes() {
     map.createPane("locationMarker")
-    map.getPane("locationMarker").style.zIndex = 510;
+    map.getPane("locationMarker").style.zIndex =3;
     map.createPane('popup');
-    map.getPane("popup").style.zIndex = 500;
+    map.getPane("popup").style.zIndex = 4;
     map.createPane("pointFilter")
-    map.getPane("pointFilter").style.zIndex = 450;
+    map.getPane("pointFilter").style.zIndex = 3;
     map.createPane("labels")
-    map.getPane("labels").style.zIndex = 500;
+    map.getPane("labels").style.zIndex = 5;
     map.createPane("map")
-    map.getPane("map").style.zIndex = 500;
+    map.getPane("map").style.zIndex = 1;
 };
 
 async function getData(map) {
 
-    $.getJSON('data/counties.json').then(function (response) {
+    await $.getJSON('data/counties.json').then(function (response) {
 
         countyMap.storeData(response)
+        return true
     }).then(
     //state layer, just to show state borders ! interactive:false
  
-    $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
+    await $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
 
         stateMap.storeData(response)
 
         stateMap.loadLayer(map)
         currentLayer = stateMap;
         stateMap.setParent(this)
+        return true
 
-    })).then(
-        $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
+    })).then( 
+        setTimeout(() => {
+            console.log("time delay")
+            return true
+        }, 2000)
+    )
+    .then(
+        await $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
 
 
 
             L.geoJson(response, {
                 style: {
-                    fillOpacity: 0,
+                    fillOpacity: 1.0,
                     interactive: false,
-                    weight: 0.0,
+                    weight: 1.0,
                     color: "#000",
                     pane: "labels"
                 }
 
             }).addTo(map);
+            return true
         })).then(
-    $.getJSON("data/swastika_geocoded.geojson").then(async function (response) {
+    await $.getJSON("data/swastika_geocoded.geojson").then(async function (response) {
         pointLayer.storeData(response)
         pointLayer.loadLayer(map)
+        return true
 
 
     }));
@@ -164,6 +177,7 @@ function addCountyMapOptions() {
     optionCont.change((e) => {
         let value = e.target.value
         countyMap.resetMapLayer(map, value)
+        pointLayer.refreshLegend();
     })
 
 }
@@ -175,12 +189,14 @@ async function addStateMapOptions() {
         optionCont.append($('<option>', {
             value: option,
             text: options[option]['NAME']
+            
         }))
 
     })
     optionCont.change((e) => {
         let value = e.target.value
         stateMap.resetMapLayer(map, value)
+        pointLayer.refreshLegend();
     })
     return
 
@@ -344,6 +360,7 @@ function loadFilters() {
         stateLegendSelect.hide()
         countyLegendSelect.hide()
         legendSelectText.html('')
+       
         switch (e.target.value) {
             case 'countyLayer':
                 legendSelectText.html('Change County Legend:')
@@ -361,6 +378,7 @@ function loadFilters() {
                 console.log('no layer selected')
                 break;
         }
+        pointLayer.refreshLegend();
     });
 }
 

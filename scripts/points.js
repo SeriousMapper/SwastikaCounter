@@ -1,4 +1,4 @@
-export {storeData, loadLayer}
+export {storeData, loadLayer, refreshLegend}
 
 
 import {
@@ -19,6 +19,7 @@ let pointRadius;
 var currYear = 2016;
 let queryYears = false;
 let cityStateFilter;
+let legend = L.control({ position: 'bottomright' });
 let pointSingular = []; //data wrapper for individual cities
 let filters = {"category of place": [], "source": [],  "media":[]}
 function storeData(json) {
@@ -34,6 +35,11 @@ async function loadLayer(global_map) {
     let init_brush = x.domain().map(interval.round)
     d3.select(".brush").call(brush.move, init_brush.map(x));
     showSliderTooltip(init_brush.map(x))
+    legend.addTo(map);
+}
+function refreshLegend() {
+    map.removeControl(legend);
+    legend.addTo(map)
 }
 function createPointFeatureDictionary() { //subset of the point geojson, used to concactenate points dict[point] = [...incident]
     pointGeoJSON.features.forEach(feature => {
@@ -43,6 +49,7 @@ function createPointFeatureDictionary() { //subset of the point geojson, used to
 function loadClickEvents() {
     let pointFilterBtn = $('#point-filter-btn')
     let mapQueryDiv = $('#query-container')
+    let helpBtn = $("#help-btn")
 
     /*     collapseBtn.click(() => {
             mapQueryDiv.html('')
@@ -59,7 +66,60 @@ function loadClickEvents() {
 
 
     })
+    helpBtn.click(() => {
+        if (sideBarCollapsed) {
+            handleSidebarCollapse();
+        }
+        mapQueryDiv.html("")
+        loadHelpMenu();
+    })
 
+}
+function loadHelpMenu() {
+    let mapQueryDiv = $('#query-container')
+    let header = $('<div/>', {
+        'class': 'point-query-header',
+        html: '<h2> Frequently Asked Questions </h2>'
+    });
+    let container = $('<div/>', {
+        'class': "point-query-container",
+    })
+    
+    container.appendTo(mapQueryDiv)
+    header.appendTo(container)
+    let questions =["How do I view info for a certain city?",
+    
+    "Can I see the demographic data for a county or state?",
+    "Where did all of the points (reported incidents) go?",
+    "How do the legend so that I can see different patterns?", 
+    "How can I change or remove the base map layer?",
+    "How can I filter the reported incidents?",
+    "How can I change the time range for the reported incidents?"]
+    let answers = ["You can view the info for a certain city by simply clicking on a city within the map. You can view the date of discovery, the website linked to the sighting, and information such as the place and source of publication.",
+"Yes, you can! By clicking on a state you can view more detailed demographic data such as the population characteristics.",
+"You may have applied a filter that has no visible point data. There is also currently a bug in which the points are drawn below the other layers. Try refreshing the page.",
+"You can change the legend by hover over the 'Change Legend' menu on the left side of the screen, then you may select a different legend in the dropdown menu. Legends are represented by quantiles.",
+"You can change the displayed layer by hovering over the 'Layers' menu on the left side of the screen. After doing so, you may select the Elecotral Map (by county), Demographic Map (by state) or clear the layers, and display just the reported incidents.",
+"You may filter the reported incidents by clicking the 'Filter Incidents' button on the left side of the screen. After doing so, a menu will appear in this panel. You can add the desired filters and remove them as well.",
+"On the bottom-left side of the map, there is a time range slider in which you may select your desired time range. You can click the left and right handles to filter the reported incidents in monthly increments. You can also click on the center of the bar to move the selected time range around."]
+    for(let i=0; i<questions.length; i ++) {
+        var questionCard = $("<div/>", {
+            className: 'questionCard',
+            css: {
+                'text-align':'left',
+                'padding':'10px'
+            }
+        })
+        var question = $('<h4>', {
+            html:questions[i]
+        })
+        var answer = $('<p>', {
+            html:answers[i]
+        })
+        question.appendTo(questionCard)
+        answer.appendTo(questionCard)
+        questionCard.appendTo(container)
+    }
 }
 function loadFilterMenu() {
     let availFilters = Object.keys(filters)
@@ -598,3 +658,61 @@ function brushed(event) {
   return timeQuery.node();
   
 }
+
+// LEGEND
+
+  
+      legend.onAdd =  function () {
+        // create the control container with a particular class name
+        var container = L.DomUtil.create("div", "legend-control-container");
+  
+        container.innerHTML = '<p class="temporalLegend"> Reported Incidents </p>';
+  
+        //Step 1: start attribute legend svg string
+        var svg = '<svg id="attribute-legend">';
+  
+        //array of circle names to base loop on
+        var circles = [40,20,5,1];
+  
+        //Step 2: loop to add each circle and text to svg string
+        for (var i = 0; i < circles.length; i++) {
+          //calculate r and cy
+          var radius = pointRadius(circles[i]);
+          console.log(radius);
+          var cy = 59 - radius;
+          console.log(cy);
+  
+          //circle string
+          svg +=
+            '<circle class="legend-circle" id="' +
+            circles[i] +
+            '" r="' +
+            radius +
+            '"cy="' +
+            cy +
+            '" fill="white" fill-opacity="1.0" stroke="black" stroke-opacity="0.5" stroke-width="2.0" cx="30"/>';
+  
+          //evenly space out labels
+          var textY = i * 12 + 20;
+  
+          //text string
+          svg +=
+            '<text id="' +
+            circles[i] +
+            '-text" x="80" y="' +
+            textY +
+            '" text-anchor="middle">' +
+            circles[i] +
+
+            "</text>";
+        }
+  
+        //close svg string
+        svg += "</svg>";
+  
+        //add attribute legend svg to container
+        container.insertAdjacentHTML('beforeend',svg);
+  
+        return container;
+      }
+    
