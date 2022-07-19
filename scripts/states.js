@@ -27,7 +27,7 @@ function setParent(obj) {
     parent = obj;
 }
 async function loadBreaks() {
-    await fetch("data/breaks/state_jenks_breaks.json")
+    await fetch("data/breaks/state_jenks_breaks2.json")
 .then(response => {
    return response.json();
 })
@@ -111,6 +111,7 @@ function style(feature) {
         color: 'black',
         fillOpacity: 1.0,
         fillColor: getColorProperty(feature.properties[property]),
+        interactive:true
     }
 }
 function highlightFeature(e) {
@@ -151,9 +152,13 @@ function loadCensusData(feature) {
     let html = `
     <div class='point-query-container'> 
     <div class='point-query-header'> 
+    
     <h2> ${props.NAME10} </h2> <h4> Reported Incidents: ${props.NUMPOINTS} 
     </div> 
+    <div class="relative-fill">
+    <div class="point-queries">
     <div class = "state-info-container">
+    
     <h3> Demographics </h3>
     <p> Demographic data is obtained from the <a href="https://www.census.gov/"> U.S Census Bureau </a> and the <a href="https://ajpp.brandeis.edu"> American Jewish Population Project</a>.
     <ul> 
@@ -177,6 +182,8 @@ function loadCensusData(feature) {
     <li> <b> 2020: </b> ${props.COUNT2020} </li>
     <li> <b> 2021: </b> ${props.COUNT2021} </li>
     </ul>
+    </div>
+    </div>
     </div>
     </div>`
     mapQueryDiv.html(html)

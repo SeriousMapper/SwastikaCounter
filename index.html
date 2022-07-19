@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles/style.css">
     <title>Swastika Counter Map</title>
+    
     <link rel="stylesheet" href="lib/leaflet.css" />
     <script src="lib/leaflet-src.js"></script>
     <script src="lib/jquery-3.6.0.js"> </script>
@@ -21,56 +23,21 @@
         
         <!-- <div class="header"> <h2>Swastika Counter Map Dashboard</h2></div> -->
         <div class="container">
-            
-            <div class="map-filters">
-                <div class="sidebar">
-                    <img src="svg/layer-icon.svg" alt="">
-                    <div class="sidebar-content">
+            <div class="menu-parent" id="menu">
 
-                        <input type="radio" id="county-layer" name="layer" value="countyLayer">
-                        <label for="county-layer">Electoral County Map</label>
-                        <input type="radio" id="state-layer" name="layer" value="stateLayer" checked="checked">
-                        <label for="state-layer">Demographic State Map</label> 
-                        <input type="radio" id="no-layer" name="layer" value="noLayer">
-                        <label for="no-layer">Clear Layers</label>
-                    </div>
-                    <h3> Layers</h3>
-
-                </div>
-                <div class="sidebar">
-                    <img src="svg/map_glass.svg" alt="">
-                    <div class="sidebar-content">
-                        <div class="legend-select-container">
-                            <b id="legend-select-text"> Change State Map Legend: </b>
-                        <select name="legend-select-state" id="legend-select-state">
-                            
-                        </select>
-                        <select name="legend-select-county" id="legend-select-county">
-                            
-                            
-                        </select>
-                    </div>
-                    </div>
-                    <h3>Change Legend</h3>
-                </div>
-                    <button id="point-filter-btn">
-                        <img src="svg/location.svg" alt="">
-                        <h3> Filter Incidents</h3>
-    
-                    </button>
-                    <div class="sidebar">
-                        <img src="svg/share.svg" alt="">
-                        <h3> Share</h3>
-    
-                    </div>
-                    <button id="help-btn">
-                        <img src="svg/faq.svg" alt="">
-                        <h3> Help</h3>
-    
-                    </button>
-
+        <div class="menu-child">
+            <div class="map-filters" id="map-menu">
+                Swastika Counter Map Dashboard
             </div>
-
+        </div>
+        <div class="menu-child" >
+            
+            <div class="filter-menu-container menu-collapsed" id="filter-menu" >
+                <div class="filter-menu" id="filter-menu-contents" ></div>
+                
+            </div>
+        </div>
+        </div>
 
             <div class="map-container">
                 <div class="map-header">
@@ -93,7 +60,7 @@
                     <div class="time-slider-tooltip" id="tooltip-to">
                     
                     </div>
-                <svg id="time-query" width="800" height="52"></svg>
+                <svg id="time-query" width="500" height="52"></svg>
                 
             </div>
                 <div class="infoBox">
@@ -103,7 +70,7 @@
             </div>
             <div class="map-query collapsed">
                 
-                <div id="query-container"></div>
+                <div id="query-container" style="width:100%; height:100%"></div>
 
 
             </div>

@@ -1,12 +1,22 @@
-export {storeData, loadLayer, refreshLegend}
+export {storeData, loadLayer, refreshLegend, loadClickEvents}
 
 
 import {
     handleSidebarCollapse,
     sideBarCollapsed
 } from "./components/sidebar.js";
-
-
+const NUM_CIRCLES = 4;
+const DEFAULT_FILL = 'white'
+const DEFAULT_STROKE = '#000'
+const HIGHLIGHT_COLOR = 'coral'
+const INNER_STROKE_WIDTH = 1.2
+const OUTER_STROKE_WIDTH = 1.4
+const MAX_FILTERS = 7;
+const COLORS = ['#40E0D0', '#CD5C5C', '#DAF7A6', '#FFC300', '#A2D9CE', '#FF5733', 'yellow', 'pink']
+let circleDrawn = '#circle' +String(0)
+let appliedColors = [];
+let appliedFilters = 0;
+let currFilters = [];
 let pointGeoJSON;
 let pointCities = {}
 let pointFilters = {}
@@ -21,25 +31,29 @@ let queryYears = false;
 let cityStateFilter;
 let legend = L.control({ position: 'bottomright' });
 let pointSingular = []; //data wrapper for individual cities
-let filters = {"category of place": [], "source": [],  "media":[]}
+let filters = {"category of place": [], "source": [],  "media":[], "target":[]}
+let filterColors = {"category of place": [], "source": [],  "media":[], 'target':[]}
+let pointPane;
+
+let filterLegend = L.control({ position: 'bottomright' });
 function storeData(json) {
     pointGeoJSON = json
 }
 async function loadLayer(global_map) {
     await createPointFeatureDictionary();
-    loadClickEvents();
     pointRadius = defineRadius();
     map = global_map
     L.svg({clickable:true}).addTo(map)
     pointLayer = d3Layer(pointSingular);
     let init_brush = x.domain().map(interval.round)
-    d3.select(".brush").call(brush.move, init_brush.map(x));
+    d3.select(".brush").call(brush.move, init_brush.map(x)); 
     showSliderTooltip(init_brush.map(x))
     legend.addTo(map);
+    loadFilterMenu();
+    
 }
 function refreshLegend() {
-    map.removeControl(legend);
-    legend.addTo(map)
+    updateLegend();
 }
 function createPointFeatureDictionary() { //subset of the point geojson, used to concactenate points dict[point] = [...incident]
     pointGeoJSON.features.forEach(feature => {
@@ -50,19 +64,19 @@ function loadClickEvents() {
     let pointFilterBtn = $('#point-filter-btn')
     let mapQueryDiv = $('#query-container')
     let helpBtn = $("#help-btn")
-
+    let filterMenu = $('#filter-menu')
+    let mainMenu = $('#map-menu')
+    let menu = $('#menu')
     /*     collapseBtn.click(() => {
             mapQueryDiv.html('')
             handleSidebarCollapse();
         }); */
 
     pointFilterBtn.click(() => {
-        if (sideBarCollapsed) {
-            handleSidebarCollapse();
-        }
-        mapQueryDiv.html("")
-        let groupTest = d3.group(pointGeoJSON.features, d => d.properties['category of place'])
-        loadFilterMenu();
+
+        filterMenu.toggleClass('menu-collapsed')
+        mainMenu.toggleClass('menu-collapsed')
+        menu.toggleClass('extended')
 
 
     })
@@ -122,8 +136,10 @@ function loadHelpMenu() {
     }
 }
 function loadFilterMenu() {
+    let filterMenu = $('#filter-menu')
+    let mainMenu = $('#map-menu')
     let availFilters = Object.keys(filters)
-    let mapQueryDiv = $('#query-container')
+    let mapQueryDiv = $('#filter-menu-contents')
     let checked = []
     const filterBtn = (filter, property) => {
         let id = ('button-' + filter + property).replaceAll(' ', '-')
@@ -135,16 +151,20 @@ function loadFilterMenu() {
             let checkBoxId = ('checkbox-' + filter + property).replaceAll(' ', '-')
             let index = filters[filter].indexOf(property)
             filters[filter].splice(index, 1)
+            removeColor(filterColors[filter][index])
+            filterColors[filter].splice(index, 1)
+            appliedFilters -= 1
             $(`#${checkBoxId}`).prop('checked', false)
             let btnId = ('button-' + filter + property).replaceAll(' ', '-')
             $(`#${btnId}`).remove()
+            refreshLegend();
+            
             filterPoints();
         })
         btn.on('mouseover', () => {
             highlightPoints(filter, property)
         })
         btn.on('mouseout', () => {
-            filterPoints();
         })
         return btn
     }
@@ -154,17 +174,53 @@ function loadFilterMenu() {
     let pointFilterWindow = $('<div/>', {
         'class': "point-filter-window",
     })
+    let backBtn = $('<button>', {
+        html: 'Go Back'
+    })
     let header = $('<div/>', {
-        'class': 'point-query-header',
-        html: '<h2> Filter Incidents By </h2>'
+        'class': 'flex-row point-query-header',
+        html: ''
     });
+
+    backBtn.appendTo(header)
+    $('<h3>', {
+        html:'Filter Incidents'
+    }).appendTo(header)
+
+
     let filterList = $('<div>', {
         'class': 'point-query-filters',
-        html: 'Applied Filters:',
+        html: '<h4> Applied Filters: </h4>',
     })
     header.appendTo(container)
+    filterList.appendTo(container)
     pointFilterWindow.appendTo(container)
     container.appendTo(mapQueryDiv)
+    backBtn.on('click', () => {
+        filterMenu.toggleClass('menu-collapsed')
+        mainMenu.toggleClass('menu-collapsed') 
+        $('#menu').toggleClass('extended')     
+    })
+    container.on('mouseenter', ()=> {
+        
+        svg.selectAll('g.Dots')
+        .selectAll('circle')
+        .attr('visibility', 'hidden')
+        
+        svg.selectAll('g.Dots')
+        .selectAll(circleDrawn)
+        .attr('visibility', 'visible')
+        .attr('fill', DEFAULT_FILL)
+        .attr('opacity', 0.2)
+    })
+    container.on('mouseleave', ()=> {
+        svg.selectAll('g.Dots')
+        .selectAll('circle')
+        .attr('visibility', 'hidden')
+        .attr('opacity', 1.0)
+        filterPoints();
+    })
+    
     availFilters.forEach( filter => {
         let group = d3.group(pointGeoJSON.features, d => d.properties[filter])
         
@@ -187,6 +243,7 @@ function loadFilterMenu() {
             itemDiv.toggleClass('open')
         })
         groupKeys.forEach(property => {
+            if(property !== '') {
             let propertyText = property === '' ? 'None' : property;
             let checkBoxId = ('checkbox-' + filter + property).replaceAll(' ', '-')
             let checkBox = $('<input/>', {
@@ -201,19 +258,32 @@ function loadFilterMenu() {
 
             checkBox.change(() => {
                 if(checkBox.prop('checked')) {
+
                     filters[filter].push(property)
+                    let color = getNextColor()
+                    filterColors[filter].push(color)
+
                     let newBtn = filterBtn(filter, property)
                     newBtn.appendTo(filterList)
-                    console.log(newBtn)
+                    
+                    appliedFilters += 1
+
+                    
 
                 } else {
                     let index = filters[filter].indexOf(property)
+
                     filters[filter].splice(index, 1)
+                    removeColor(filterColors[filter][index])
+                    filterColors[filter].splice(index, 1)
+                    appliedFilters -= 1
                     let btnId = ('button-' + filter + property).replaceAll(' ', '-')
                     $(`#${btnId}`).remove()
                     
                 }
-                filterPoints()
+                
+                filterPoints();
+                refreshLegend();
             })
             
             checkBox.prop('checked', () => {
@@ -230,18 +300,33 @@ function loadFilterMenu() {
                 html: `${propertyText} <b> (${group.get(property).length}) </b>`
 
             })
-            checkBoxLabel.on('mouseover', () => {
+            checkBoxLabel.on('mouseenter', () => {
                 highlightPoints(filter, property)
             })
-            checkBoxLabel.on('mouseout', () => {
-                filterPoints();
+            checkBoxLabel.on('mouseleave', () => {
             })
             checkBox.appendTo(itemDiv)
             checkBoxLabel.appendTo(itemDiv)
+        }
         })
         itemContainer.appendTo(pointFilterWindow)
     })
-    filterList.appendTo(container)
+    
+}
+function getNextColor() {
+    for(let i=0; i<COLORS.length; i++) {
+        if(!appliedColors.includes(COLORS[i])) {
+            appliedColors.push(COLORS[i])
+            return COLORS[i]
+        }
+    }
+    return('#FFF')
+}
+function removeColor(color) {
+    console.log(color)
+    let index = appliedColors.indexOf(color)
+    console.log(index)
+    appliedColors.splice(index, 1)
 }
 var tooltip = d3.select("body")
     .append("div")
@@ -267,18 +352,18 @@ function showPointData(d) {
     let cityState = d.properties.city_state
     let data = cityStateFilter.get(cityState)
     let html = `<div class='point-query-container'> <div class='point-query-header' id='point-query-header-id'> <h3> ${cityState} </h3> <h4> Reported Incidents: ${data.length} </div> `
+    html += ' <div class="relative-fill"> <div class="point-queries">'
     html += populateQuery(data)
-    html += "</div>"
+    html += "</div> </div> </div>"
     mapQueryDiv.html(html)
     if (sideBarCollapsed) {
-            console.log(sideBarCollapsed)
             handleSidebarCollapse();
 
             
             }
     if (filterApplied && data.length < pointCities[cityState].length) {
         let filterNotifier = $('<div>', {
-            html:'This is displaying the filtered incidents'
+            html:'This is displaying the filtered incidents <br>'
         })
         let showAllDataBtn = $('<button>', {
             html:'Show All Data for ' + cityState
@@ -295,11 +380,11 @@ function showAllPointData(cityState) {
     
     let data = pointCities[cityState]
     let html = `<div class='point-query-container'> <div class='point-query-header' id='point-query-header-id'> <h3> ${cityState} </h3> <h4> Reported Incidents: ${data.length} </div> `
+    html += ' <div class="relative-fill"> <div class="point-queries">'
     html += populateQuery(data)
-    html += "</div>"
+    html += "</div> </div> </div>"
     mapQueryDiv.html(html)
     if (sideBarCollapsed) {
-            console.log(sideBarCollapsed)
             handleSidebarCollapse();
 
             
@@ -321,10 +406,23 @@ function highlightPoints(filter, property) {
     })
     let filterCityGroup = d3.group(filteredData, d => d.properties.city_state)
     let filterCityGroupKeys = Array.from(filterCityGroup.keys())
-    
-    svg.selectAll('circle').attr('opacity', 0.2)
+    let group = svg.selectAll('g.Dots')
+    group.selectAll('circle')
     .attr('visibility', 'hidden')
-    .attr('fill', 'white').filter( (d) => {
+    .attr('stroke', DEFAULT_STROKE)
+    .attr('stroke-width', 1.4)
+    group
+    
+    .selectAll(circleDrawn)
+    .attr('visibility', 'visible')
+    .attr('fill', DEFAULT_FILL)
+    .attr('opacity', 0.2)
+    
+    .attr("r", function(d) {
+        return d.radius
+    })
+
+    group.filter( (d) => {
         if(timeFilter.length == 0) {
             return true
         } else {
@@ -335,17 +433,17 @@ function highlightPoints(filter, property) {
     }
     return false
     })
-    .attr('visibility', 'visible')
     .filter( (d) => {
         return filterCityGroupKeys.includes(d.properties.city_state)
     })
-    .attr('opacity', 1)
-    .attr('fill', 'yellow')
-    .transition()
-    .duration(200)
+    .selectAll(circleDrawn)
+    .attr('class', 'visible')
+    .attr('fill', HIGHLIGHT_COLOR)
+    .attr('opacity', 1.0)
     .attr("r", function(d) {
         return pointRadius(filterCityGroup.get(d.properties.city_state).length)
     })
+
 
 }
 function filterPoints() {
@@ -361,10 +459,12 @@ function filterPoints() {
         return bool
     }
 
-    let fil = svg.selectAll('circle')
+    let fil = svg.selectAll('g.Dots')
     .attr('visibility', 'hidden')
 
-
+    fil.selectAll('circle')
+    .attr('class', 'hidden')
+    .attr('visibility', 'hidden')
     let filteredData = pointGeoJSON.features.filter( (d) => {
         if(timeFilter.length == 0) {
             return true
@@ -394,18 +494,31 @@ function filterPoints() {
 
     cityStateFilter = d3.group(filteredData, d => d.properties.city_state)
     let cityKeys = Array.from(cityStateFilter.keys())
+    let filter = fil.filter( (d) => {
+        if(cityKeys.includes(d.properties.city_state)) {
+            let data = cityStateFilter.get(d.properties.city_state)
+            d.radius = pointRadius(cityStateFilter.get(d.properties.city_state).length)
+            return true
 
-    fil.filter( (d) => {
-        return cityKeys.includes(d.properties.city_state)
+        }
+        return false
     })
-    .attr('visibility', 'visible')
-    .attr('fill', 'white')
-    .attr('opacity', 1)
-    .transition()
-    .duration(100)
+    
+    filter
+    
+    .selectAll('circle')
+    .attr('class', 'visible')
     .attr("r", function(d) {
-        return pointRadius(cityStateFilter.get(d.properties.city_state).length)
+        d.radius = pointRadius(cityStateFilter.get(d.properties.city_state).length)
+        return d.radius + d.r_add
     })
+    
+
+    defineCircleStyle();
+    
+
+    
+
     
 
     
@@ -413,23 +526,85 @@ function filterPoints() {
 
 }
 function d3Layer(data) {
-    map.getPane("locationMarker").style.zIndex = 600;
+    let circleProperties = [ {'index': 0}, {'index': 1}, {'index': 2}]
     const overlay = d3.select(map.getPanes().overlayPane)
-    console.log(map.getPanes().locationMarker)
-
+    let circDrawn = 0
     svg = overlay.select('svg').attr("pointer-events", "auto")
     const featureByPlace = d3.group(pointGeoJSON.features, d => d.properties['category of place'])
-    console.log(featureByPlace)
-    const Dots = svg.selectAll('circle')
-                    .attr("class", "Dots")
+    const Dots = svg.append('g')
+    .selectAll('g.Dots')
+                    
                     .data(data)
                     .enter()
+                    .append('g')
+                    .attr('class', 'Dots' )
+                    .attr('id', function(d,i) {
+                        d.id = i
+                        return 'group'+d.id
+                    })
+                    .on('mouseover', function(e, d ) { //function to add mouseover event
+                        showTooltip(d)
+                        d3.select(this).selectAll(circleDrawn).transition() //D3 selects the object we have moused over in order to perform operations on it
+                          .duration(200) //how long we are transitioning between the two states (works like keyframes)
+                          .attr("fill", HIGHLIGHT_COLOR)
+                          .attr('r', function(d) {
+                            return d.radius * 1.5
+                          }) //change the fill //change radius
+                        
+                      })
+                      .on('mouseout', function() {
+                          hideTooltip();
+
+                          d3.select(this).selectAll(circleDrawn).transition() //D3 selects the object we have moused over in order to perform operations on it
+                          .duration(200) //how long we are transitioning between the two states (works like keyframes)
+                          .attr("fill", function(d) {
+                            return d.fill
+                          }) //change the fill //change radius
+                          .attr('r', function(d) {
+                            return d.radius
+                          })
+
+                      })
+                      .on("mousemove", function() {
+                        return tooltip.style("top", (event.pageY + 15) + "px")
+                          .style("left", (event.pageX + 15) + "px");
+                      })
+                      .on('click', (e, d)=> {
+                          showPointData(d)
+                      })
+                      .selectAll('g.Dots')
+                    .data(function(d) {
+                        let circs = []
+                        let radius = pointRadius(pointCities[d.properties.city_state].length)
+                        for(let i =0; i<NUM_CIRCLES; i++) {
+                            let colorIndex = (i*2)-1
+                            let visible = false
+                            if (colorIndex-1 == appliedFilters) {
+                                visible = true
+                            }
+                            circDrawn += 1
+                            circs.push( {
+                                fill:COLORS[colorIndex-1],
+                                stroke:COLORS[colorIndex],
+                                index: i,
+                                visible:false,
+                                r_add: i*2.0,
+                                radius: radius,
+                                coordinate:[d.geometry.coordinates[1],d.geometry.coordinates[0]],
+                                properties:d.properties,
+                                stroke_width:2.0
+                            })
+                        }
+                        return circs
+                    })
+                    .enter()
                     .append('circle')
-                        .attr("id", "dotties")
-                        .attr("fill", "#F6F6F4") //#F6F6F4 #252323
-                        .attr("stroke", "#252323")
-                        .attr('stroke-width', 2.0)
-                        .attr('stroke-opacity', 0.6)
+                        .attr("id", function(d,i) {
+                            return 'circle' + i
+                        })
+                        .attr('visibility', 'hidden')
+                        .attr('stroke-width', 1.5)
+                        .attr('stroke-opacity', 1.0)
                         .attr('z-index', 100000)
 /*                         .filter((d) => {
                             if(d.properties['year'] == 2016) {
@@ -440,50 +615,115 @@ function d3Layer(data) {
                         //Leaflet has to take control of projecting points. Here we are feeding the latitude and longitude coordinates to
                         //leaflet so that it can project them on the coordinates of the view. Notice, we have to reverse lat and lon.
                         //Finally, the returned conversion produces an x and y point. We have to select the the desired one using .x or .y
-                        .attr("cx", d => map.latLngToLayerPoint([d.geometry.coordinates[1],d.geometry.coordinates[0]]).x)
-                        .attr("cy", d => map.latLngToLayerPoint([d.geometry.coordinates[1],d.geometry.coordinates[0]]).y) 
-                        .attr("r", function(d) {
-                            return pointRadius(pointCities[d.properties.city_state].length)
+                        .attr("cx", d => map.latLngToLayerPoint(d.coordinate).x)
+                        .attr("cy", d => map.latLngToLayerPoint(d.coordinate).y) 
+                        .attr("r",function(d) {
+                            return d.radius
+                        })
+                        .sort( (a, b) => {
+                            return b.r_add - a.r_add
                         })
                         
-                        .on('mouseover', function(e, d ) { //function to add mouseover event
-                            showTooltip(d)
-                            d3.select(this).transition() //D3 selects the object we have moused over in order to perform operations on it
-                              .duration('300') //how long we are transitioning between the two states (works like keyframes)
-                              .attr("fill", "red") //change the fill //change radius
-                            
-                          })
-                          .on('mouseout', function() {
-                              hideTooltip();
-                              d3.select(this)
-                              .attr('fill', 'white') //reverse the action based on when we mouse off the the circle
-                            d3.select(this).transition()
-                              .duration('150')
-                              .attr("fill", "white")
 
-                          })
-                          .on("mousemove", function() {
-                            return tooltip.style("top", (event.pageY + 15) + "px")
-                              .style("left", (event.pageX + 15) + "px");
-                          })
-                          .on('click', (e, d)=> {
-                              showPointData(d)
-                          });
     const update = () => Dots
-            .attr("cx", d => map.latLngToLayerPoint([d.geometry.coordinates[1],d.geometry.coordinates[0]]).x)
-            .attr("cy", d => map.latLngToLayerPoint([d.geometry.coordinates[1],d.geometry.coordinates[0]]).y) 
+            .attr("cx", d => map.latLngToLayerPoint(d.coordinate).x)
+            .attr("cy", d => map.latLngToLayerPoint(d.coordinate).y) 
     cityStateFilter = pointGeoJSON.features;
     cityStateFilter = d3.group(cityStateFilter, d => d.properties.city_state)
     console.log(cityStateFilter)
+    
     sortCirlces();
+    defineCircleStyle();
+    
     map.on("zoomend", update)
 }
+function getCircleColors(d) {
+     let groupFilter = cityStateFilter.get(d.properties.city_state)
+    let colorsApplied = []
+    let filterKeys = Object.keys(filters)
+    groupFilter.forEach( city => {
+        
+        filterKeys.forEach(key => {
+            
+            filters[key].forEach(filter => {
+                let index = filters[key].indexOf(filter)
+                let color = filterColors[key][index]
+                if(!colorsApplied.includes(color)) {
+                    if(city.properties[key] == filter) {
+                        colorsApplied.push(color)
+                    }
+                    
+                }
+
+            })
+            })
+        })
+    
+    colorsApplied.sort()
+    if (colorsApplied.length == 0) {
+        colorsApplied.push(DEFAULT_FILL)
+        
+    }
+    colorsApplied.push(DEFAULT_STROKE)
+    return colorsApplied
+}
+function defineCircleStyle() {
+    d3.selectAll('g.Dots')
+    .each( (d, i, j)=> {
+        let visibilityCheck = cityStateFilter.has(d.properties.city_state) 
+        let circColors = visibilityCheck ? getCircleColors(d) : [DEFAULT_FILL]
+        let addedCircle = circColors.length == 2 ? 0 : 1
+        let circlesDrawn = visibilityCheck ? Math.ceil((circColors.length+addedCircle)/2.0) : 0
+
+        d3.select('#group' + d.id)
+        .selectAll('circle')
+        .each( (d, i)=> {
+            d.visible = 'hidden'
+            d.stroke = 'none'
+            d.fill ='none'
+            if(NUM_CIRCLES - i <= circlesDrawn) {
+                d.fill = circColors[d.index]
+                d.stroke = circColors[d.index+1]
+                d.visible = 'visible'
+                d.stroke_width = 2.0
+                if (circColors[d.index+1] == DEFAULT_STROKE) {
+                    d.stroke_width = 1.4
+
+                }
+
+
+            }
+        })
+    })
+    styleCircles(d3.selectAll('g.Dots'));
+
+}
+function styleCircles(group) { //pass a group
+
+    group.selectAll('circle')
+    .attr('visibility', (d) => { 
+        return d.visible
+    })
+    .attr("fill", function(d) {
+        return d.fill
+    }) //#F6F6F4 #252323
+    .attr("stroke", function(d) {
+        return d.stroke
+        }
+    )
+    .attr('stroke-width', function(d) {
+        return d.stroke_width
+    })
+    .attr('opacity', 1.0)
+
+}
+
+
 function sortCirlces() {
-    let sort = svg.selectAll("circle")
+    svg.selectAll("g.Dots")
     .sort( (a, b) => {
         return pointCities[b.properties.city_state].length - pointCities[a.properties.city_state].length
     })
-  console.log(sort)
 }
 function addFeatureToQuery(feature) {
     let cityState = feature.properties.city_state
@@ -501,7 +741,6 @@ function processPointProperties(properties) {
     for (let property in Object.keys(properties)) {
         let propertyName = keys[property]
         if (typeof (pointFilters[propertyName]) === "undefined") {
-            console.log(propertyName)
             pointFilters[propertyName] = []
 
         }
@@ -526,12 +765,13 @@ function loadCard(properties) {
     return `<div class="query-card">
     <ul>
         <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
-        <li> <b>Website:</b> <a href="${properties['website']}"> ${properties['website'].substring(0, 25)}... </a> </li>
+        <li> <b>Source:</b> ${properties['source']}</li>
+        <li> <b>Website:</b> <a href="${properties['website']}" target="_blank" rel="noopener noreferrer"> ${properties['website'].substring(0, 25)}... </a> </li>
         <li> <b>Category of Place:</b> ${properties['category of place']} </li>
         <li> <b>Place:</b> ${properties['place']} </li>
         <li> <b>Structure:</b> ${properties['structure']} </li>
         <li> <b>Media:</b> ${properties['media']} </li>
-        <li> <b>Source:</b> ${properties['source']}</li>
+        
         
     </ul>
     <img src= "${properties['url_to_jpg']}" />
@@ -660,16 +900,46 @@ function brushed(event) {
 }
 
 // LEGEND
+const pointLegend = () => {
+    
+    let list = ''
+    let header = ''
+    let keys = Object.keys(filterColors)
+    keys.forEach(key => {
+        if(filterColors[key].length > 0) {
+            header = 'Applied Filters'
+            list += `<div class='point-legend-list'> <p>${key} </p>`
+            for(let i =0; i<filterColors[key].length; i++) {
+                list += `<div class='point-legend-obj'>  <span style="border-radius:50%; border:0.0px solid black; background-color:${filterColors[key][i]}"> </span>${filters[key][i]} </div>`
+            }
+            list += '</div>'
+        }
+    })
+    let div = '<div class="legend-block">' + header + '<div class="point-legend-list-container">'  + list +' </div> </div>' 
+    return div
 
+}
+            
   
       legend.onAdd =  function () {
         // create the control container with a particular class name
         var container = L.DomUtil.create("div", "legend-control-container");
+        container.setAttribute('id', 'point-legend')
+        container.innerHTML = getLegend();
+        
+        return container;
+      }
+    function updateLegend() {
+        let container = $('#point-legend')
+        container.html(getLegend());
+        
+    }
+    function getLegend() {
+        var container = '';
   
-        container.innerHTML = '<p class="temporalLegend"> Reported Incidents </p>';
-  
+        
         //Step 1: start attribute legend svg string
-        var svg = '<svg id="attribute-legend">';
+        var svg =  '<svg id="attribute-legend">';
   
         //array of circle names to base loop on
         var circles = [40,20,5,1];
@@ -678,9 +948,7 @@ function brushed(event) {
         for (var i = 0; i < circles.length; i++) {
           //calculate r and cy
           var radius = pointRadius(circles[i]);
-          console.log(radius);
           var cy = 59 - radius;
-          console.log(cy);
   
           //circle string
           svg +=
@@ -708,11 +976,11 @@ function brushed(event) {
         }
   
         //close svg string
-        svg += "</svg>";
+        svg += "</svg> ";
   
         //add attribute legend svg to container
-        container.insertAdjacentHTML('beforeend',svg);
-  
+        let svgContainer = '<div style="height:fit-content; margin:auto">' +'<p class="temporalLegend"> Reported Incidents </p>' + svg +'</div>'
+        container =  '<div class="point-legend-container">' + pointLegend()  +  svgContainer +  '</div>';
         return container;
-      }
-    
+  
+    }
