@@ -11,32 +11,18 @@ export {
 var map;
 
 
-var currYear = 2016;
-let queryYears = false;
+
 
 //point legend
-let qualColors = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f']
-let categories = []
-let selectedFilter = 'source'
-let pointLegend = L.control({
-    position: 'bottomright'
-})
-
+let stateMapOptions;
+let selectedOption = 'PCT_JEW_TO'
 //legend changer
 let stateLegendSelect = $('#legend-select-state')
 let countyLegendSelect = $('#legend-select-county')
 let legendSelectText = $('#legend-select-text')
 //point layer
-let pointDict = {}
-let pointGeoJSON;
-let pointFilterMenu;
-let appliedFilters = {}
-let filterColors = {}
-let pointFilter = []
-let pointCities = {}
-let pointFilters = {}
-let pointDisplay = []
-let allowedPointFilters = ['category of place', 'media', 'source', 'Nazi Reference']
+
+let outlineLayer;
 
 
 
@@ -69,17 +55,14 @@ async function initialize() {
 
     loadPanes();
     // creates panes (for z-indices) for leaflet map
-    addCountyMapOptions();
-    await addStateMapOptions(); //gets JSON with breaks and variables for statemap
+    stateMapOptions = await stateMap.loadBreaks();
     await getData(map) // asynchronous get data (gets data of state, county and point map)
 
-
-    loadSlider(); // creates time slider
-    loadFilters(); //load point filters
-    loadClickEvents(); //click event functions
-    console.log(categories)
+    loadMainMenu();
     countyLegendSelect.hide()
-    
+    setPanes();
+    pointLayer.loadClickEvents()
+    reloadMap('state', selectedOption)
 
 
 
@@ -98,9 +81,11 @@ function createMap() {
     //add OSM base tilelayer
     map = L.map('map', {
         minZoom: 5,
-        maxZoom: 9,
+        maxZoom: 9
     }).setView([37.8, -96], 5);
-    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {}).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd'}).addTo(map);
 
 };
 function loadPanes() {
@@ -111,21 +96,34 @@ function loadPanes() {
     map.createPane("pointFilter")
     map.getPane("pointFilter").style.zIndex = 3;
     map.createPane("labels")
-    map.getPane("labels").style.zIndex = 5;
+    map.getPane("labels").style.zIndex = 10;
     map.createPane("map")
     map.getPane("map").style.zIndex = 1;
+
 };
+function setPanes() {
+    map.getPane("locationMarker").style.zIndex =3;
+    map.getPane("popup").style.zIndex = 4;
+    map.getPane("pointFilter").style.zIndex = 3;
+    map.getPane("map").style.zIndex = 5000;
+    map.getPane("labels").style.zIndex = 4999;
+    map.getPane("labels").style.pointerEvents = 'none';
+    map.getPane("map").style.pointerEvents = 'unset';
+    map.getPane("overlayPane").style.zIndex = 5001;
+
+}
 
 async function getData(map) {
 
     await $.getJSON('data/counties.json').then(function (response) {
 
         countyMap.storeData(response)
+       
         return true
     }).then(
     //state layer, just to show state borders ! interactive:false
  
-    await $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
+    await $.getJSON('data/STATES_JSON.json').then(function (response) {
 
         stateMap.storeData(response)
 
@@ -136,69 +134,77 @@ async function getData(map) {
 
     })).then( 
         setTimeout(() => {
-            console.log("time delay")
             return true
-        }, 2000)
+        }, 100)
     )
-    .then(
-        await $.getJSON('data/STATE_LAYER_WGS_REFAC.json').then(function (response) {
 
-
-
-            L.geoJson(response, {
-                style: {
-                    fillOpacity: 1.0,
-                    interactive: false,
-                    weight: 1.0,
-                    color: "#000",
-                    pane: "labels"
-                }
-
-            }).addTo(map);
-            return true
-        })).then(
-    await $.getJSON("data/swastika_geocoded.geojson").then(async function (response) {
+    await $.getJSON("data/swastika_geocoded_final.geojson").then(async function (response) {
+        console.log(response)
         pointLayer.storeData(response)
         pointLayer.loadLayer(map)
         return true
 
 
-    }));
+    });
+    
 };
 function addCountyMapOptions() {
     const options = [12, 16, 20]
-    let optionCont = $('#legend-select-county')
+    let optionCont = $('<div>', {
+        'class': 'label-menu',
+        'html': '<h4> Electoral </h4>'
+    })
     options.forEach(option => {
-        optionCont.append($('<option>', {
+        let input = $('<input>', {
+            type:'radio',
+            name:'layers',
             value: option,
-            text: `20${option} U.S. Presidential Election`
-        }))
-    })
-    optionCont.change((e) => {
-        let value = e.target.value
-        countyMap.resetMapLayer(map, value)
-        pointLayer.refreshLegend();
-    })
+            id: option+'-radio',
+            checked: option == selectedOption
+            
+        })
+        optionCont.append(input)
+        input.on('click', (e)=> {
+            selectedOption = e.target.value;
+            reloadMap('county', selectedOption)
+        })
+        optionCont.append($('<label>', {
+            for:option+'-radio',
+            'html': `20${option} Presidential Election`
+        })
+    )
+})
+    return optionCont;
 
 }
-async function addStateMapOptions() {
-    let options = await stateMap.loadBreaks()
+function addStateMapOptions() {
+    let options = stateMapOptions;
     let optionKeys = Object.keys(options)
-    let optionCont = $('#legend-select-state')
+    let optionCont = $('<div>', {
+        'class': 'label-menu',
+        'html': '<h4> Demographic </h4> '
+    })
     optionKeys.forEach(option => {
-        optionCont.append($('<option>', {
+        let input = $('<input>', {
+            type:'radio',
+            name:'layers',
             value: option,
-            text: options[option]['NAME']
+            id: option+'-radio',
+            checked: option == selectedOption
             
-        }))
-
-    })
-    optionCont.change((e) => {
-        let value = e.target.value
-        stateMap.resetMapLayer(map, value)
-        pointLayer.refreshLegend();
-    })
-    return
+        })
+        input.on('click', (e)=> {
+            selectedOption = e.target.value;
+            reloadMap('state', selectedOption)
+        })
+        optionCont.append(input)
+        optionCont.append($('<label>', {
+            for:option+'-radio',
+            'html': options[option]['NAME']
+        })
+    )
+})
+    return optionCont;
 
 }
 
@@ -209,177 +215,93 @@ async function addStateMapOptions() {
 /* ######################### ################################ */
 /* ########################################################## */
 
-function createPointFilters() {
-    let div;
-    let filterArray = []
-    let container = $('<div/>', {
-        'class': "point-query-container",
-    })
-    let header = $('<div/>', {
-        'class': 'point-query-header',
-        html: '<h2> Filter Incidents By </h2>'
-    });
 
-    header.appendTo(container)
-    allowedPointFilters.forEach((property_name) => {
-        let itemContainer = $('<div>', {
-            'class': 'point-filter-item-container',
-        })
-        let btn = $('<h3>', {
-            html: property_name
-        })
-        let itemDiv = $('<div/>', {
-            'class': 'point-filter-items',
-        });
-        btn.appendTo(itemContainer)
-        itemDiv.appendTo(itemContainer)
-        btn.on('click', () => {
-            itemDiv.toggleClass('open')
-        })
-        pointFilters[property_name].forEach((property) => {
-            let checkBox = $('<input/>', {
-                type: 'checkbox',
-                name: property_name,
-                id: 'checkbox-' + property,
-                value: property,
-                html: `<label for="${property}"> ${property} </label>`,
-
-
-            })
-            checkBox.change(() => {
-                filterPoints()
-            })
-            checkBox.prop('checked', () => {
-                if (typeof (appliedFilters[property_name]) !== 'undefined') {
-                    if (appliedFilters[property_name].includes(property)) {
-                        return true
-                    }
-
-
-
-                    return false
-                }
-            })
-            filterArray.push(checkBox[0])
-            let checkBoxLabel = $('<label/>', {
-                for: 'checkbox-' + property,
-                html: property
-
-            })
-
-            checkBox.appendTo(itemDiv)
-            checkBoxLabel.appendTo(itemDiv)
-
-
-        })
-        itemContainer.appendTo(container)
-        return itemContainer;
-
-    })
-    pointFilter = filterArray
-    return container;
-
-}
-function createPointLegend() {
-    map.removeControl(pointLegend)
-    pointLegend.addTo(map)
-
-
-
-}
-function loadSlider() {
-    $('.slider').on('input', (e) => {
-        if (queryYears) {
-            console.log(e.target.value)
-            currYear = e.target.value;
-
-            map.removeLayer(pointLayer)
-            pointLayer = loadPointLayer();
-            $('#year-text').html(`Year: ${currYear}`)
-            filterPoints();
+function loadMainMenu() {
+    let menu = $('#map-menu')
+    menu.html('')
+    let layerBtn = createMenuBtn('svg/layer-icon.svg', 'Layers')
+    let pointBtn = createMenuBtn('svg/location.svg', 'Filter Incidents')
+    let shareBtn = createMenuBtn('svg/share.svg', 'Share')
+    let helpBtn = createMenuBtn('svg/faq.svg', 'Help')
+    let helpShare = $('<div>', {
+        css: {
+            'width': '100%'
         }
-
-    });
-    $("#show-all").click(() => {
-        queryYears = !queryYears;
-        map.removeLayer(pointLayer)
-        pointLayer = loadPointLayer();
-        let btnText = queryYears ? 'Show All Years' : 'Change Years'
-        filterPoints();
-        if (queryYears) {
-            $('#year-text').html(`Year: ${currYear}`)
-            $('.slider').css({
-                'width': '30%',
-                'visibility': 'visible'
-            })
-            $('#year-text').css({
-                'visibility': 'visible'
-            })
-        } else {
-            $('#year-text').html(`Year: 2016-2021`)
-            $('#year-text').css({
-                'visibility': 'hidden'
-            })
-            $('.slider').css({
-                'width': '0%',
-                'visibility': 'hidden'
-            })
-        }
-        console.log(queryYears)
-        $('#show-all').html(btnText)
-
     })
+    helpShare.css({
+        'flex':'none'
+    })
+
+    layerBtn.appendTo(menu)
+    let stateOptions = addStateMapOptions();
+    let electionOptions = addCountyMapOptions();
+    let layerMenu = $('<div>', {
+        'class': 'layer-menu-cont sub-collapsed'
+    })
+    layerMenu.append(stateOptions)
+    layerMenu.append(electionOptions)
+    
+    layerBtn.append(layerMenu)
+
+    layerBtn.on('click', () => {
+        layerMenu.toggleClass('sub-collapsed')
+    })
+
+    pointBtn.appendTo(menu)
+    pointBtn.attr('id', 'point-filter-btn')
+    shareBtn.appendTo(helpShare)
+    helpBtn.appendTo(helpShare)
+    helpShare.appendTo(menu)
+}
+
+function createMenuBtn(icon, text) {
+    let menuCont = $('<div>', {
+        'class': 'menu-btn-cont'
+    })
+    let btnContainer = $('<div>', {
+        'class': 'menu-btn',
+    })
+    let svg = $('<img>', {
+        'class': 'icon',
+        'src':icon
+    })
+    let btn = $('<div>', {
+        'html':text,
+        'class': 'menu-btn-text'
+    })
+
+    svg.appendTo(btnContainer)
+    btn.appendTo(btnContainer)
+    btnContainer.appendTo(menuCont)
+    return menuCont;
 
 }
 
-
-
-pointLegend.onAdd = () => {
-    let filterKeys = Object.keys(filterColors)
-    var div = L.DomUtil.create('div', 'info legend')
-    var divHTML = `<h3> Incidents (by filter) </h3>` + '<div class="legend-flex">'
-    filterKeys.forEach(key => {
-        divHTML += '<div class="legend-body"> <h4>' + key + '</h4>'
-        let values = Object.keys(filterColors[key])
-        values.forEach(value => {
-            divHTML += '<br> <i style="background:' + qualColors[filterColors[key][value]] + '"></i> ' + value;
-        })
-        divHTML += '</div>'
-    })
-    divHTML += '</div>'
-    div.innerHTML = divHTML
-
-    return div;
-
-
-
-}
-function loadFilters() {
-    $("input[name='layer']").click(function (e) {
+function reloadMap(type, val) {
         clearCurrentLayer();
-        stateLegendSelect.hide()
-        countyLegendSelect.hide()
-        legendSelectText.html('')
-       
-        switch (e.target.value) {
-            case 'countyLayer':
-                legendSelectText.html('Change County Legend:')
+        pointLayer.refreshLegend();
+        switch (type) {
+            case 'county':
+
                 countyMap.loadLayer(map)
+                countyMap.resetMapLayer(map, val)
+                
                 currentLayer = countyMap;
-                countyLegendSelect.show()
+                
                 break;
-            case 'stateLayer':
-                legendSelectText.html('Change State Legend:')
+            case 'state':
                 stateMap.loadLayer(map)
+                stateMap.resetMapLayer(map, val)
                 currentLayer = stateMap;
-                stateLegendSelect.show()
+                
+                
                 break;
-            case 'noLayer':
+            case 'none':
                 console.log('no layer selected')
                 break;
         }
-        pointLayer.refreshLegend();
-    });
+        
+;
 }
 
 function clearCurrentLayer() {
@@ -393,194 +315,16 @@ function clearCurrentLayer() {
 
 
 
-function getPointColor(property) {
-    if (categories.length < qualColors.length) {
-        if (!categories.includes(property)) {
-            categories.push(property)
-
-        }
-        let index = categories.indexOf(property)
-        return qualColors[index]
-    }
-    return 'undefined';
-}
-
-function filterPoints() {
-    map.removeControl(pointLegend)
-    let currentFilter = {}
-    filterColors = {}
-    let colorIndex = 0
-    let legendDiv = '';
-    pointFilter.forEach((filter) => {
-        if ($(filter).prop("checked")) {
-            if (typeof (currentFilter[filter.name]) === "undefined") {
-                currentFilter[filter.name] = []
-                filterColors[filter.name] = {}
-
-            }
-            currentFilter[filter.name].push(filter.value)
-            filterColors[filter.name][filter.value] = colorIndex
-            colorIndex += 1
-        }
-    })
-    if (currentFilter !== {}) {
-        applyPointFilter(currentFilter)
-        appliedFilters = currentFilter
-        if (colorIndex > 0) {
-            createPointLegend();
-        }
-
-    }
-}
-
-
-
-function applyPointFilter(filter) {
-    pointLayer.eachLayer(function (layer) {
-        let feature = layer.feature
-        layer.setStyle(
-            stylePointFilter(filter, feature))
-    })
-}
-
-function stylePointFilter(filter, feature) {
-    let filterKeys = Object.keys(filter)
-    let style;
-    let colorIndex = 0;
-    filterKeys.forEach((key) => {
-        if (filter[key].includes(feature.properties[key])) {
-            style = {
-                fillColor: qualColors[filterColors[key][feature.properties[key]]],
-                pane: "pointFilter"
-            }
-        }
-    })
-    if (!style) {
-        style = stylePoints(feature)
-    }
-
-    return style;
-}
 
 
 
 
 
 
-function createPointFeatureDictionary() { //subset of the point geojson, used to concactenate points dict[point] = [...incident]
-    pointGeoJSON.features.forEach(feature => {
-        addFeatureToQuery(feature)
-    })
-}
-
-function loadPointLayer() {
-    return L.geoJson(pointGeoJSON, {
-
-        filter: function (feature, layer) {
-            return !queryYears ? true : currYear == feature.properties.year;
-        },
-        pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, stylePoints(feature));
-
-        },
-        onEachFeature: (feature, layer) => {
-            let cityState = feature.properties.city_state;
-            layer.bindPopup(`<h2> ${feature.properties.city_state}</h2>`, {
-                closeButton: false,
-                className: "popup",
-                pane: 'popup'
-            });
-            layer.on('mouseover', function () {
-                layer.openPopup(),
-                    layer._popup.setContent(`<h2> ${feature.properties.city_state}</h2> <p> Number of incidents: <b> ${pointCities[cityState].length} </b> <br> <br> <b> Click </b>for more info</p>`)
-                /*  displayText(feature.properties.city_state,`<p> Number of incidents: <b> ${pointCities[cityState].length} </b> <br> <br> <b> Click </b>for more info</p>` ) */
-            });
-            layer.on('mouseout', function () {
-                layer.closePopup();
-                hideBox();
-            });
-            layer.on('click', () => {
-
-                let mapQueryDiv = $('#query-container')
-                let html = `<div class='point-query-container'> <div class='point-query-header'> <h2> ${cityState} </h2> <h4> Reported Incidents: ${pointCities[cityState].length} </div> `
-                html += populateQuery(pointCities[cityState])
-                html += "</div>"
-                mapQueryDiv.html(html)
-                if (sideBarCollapsed) {
-                    console.log(sideBarCollapsed)
-                    handleSidebarCollapse();
-
-                }
-            })
-            
-            processPointProperties(feature.properties)
-
-        }
-
-    }).addTo(map);
-}
-
-function addFeatureToQuery(feature) {
-    let cityState = feature.properties.city_state
-
-    if (typeof (pointCities[cityState]) === 'undefined') {
-        pointCities[cityState] = [];
-    }
-    pointCities[cityState].push(feature)
-
-}
-
-function processPointProperties(properties) {
-    let keys = Object.keys(properties)
-    for (let property in Object.keys(properties)) {
-        let propertyName = keys[property]
-        if (typeof (pointFilters[propertyName]) === "undefined") {
-            console.log(propertyName)
-            pointFilters[propertyName] = []
-
-        }
-        if (!pointFilters[propertyName].includes(properties[propertyName])) {
-            pointFilters[propertyName].push(properties[propertyName])
-        }
-    }
 
 
-}
 
-function populateQuery(features) {
-    let div = ""
-    features.forEach((feature) => {
-        div += loadCard(feature.properties)
 
-    })
-    return div;
 
-}
 
-function loadCard(properties) {
-    return `<div class="query-card">
-    <ul>
-        <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
-        <li> <b>Website:</b> <a href="${properties['website']}"> ${properties['website'].substring(0, 25)}... </a> </li>
-        <li> <b>Category of Place:</b> ${properties['category of place']} </li>
-        <li> <b>Structure:</b> ${properties['structure']} </li>
-        <li> <b>Media:</b> ${properties['media']} </li>
-        <li> <b>Source:</b> ${properties['source']}</li>
-        
-    </ul>
-</div>`
-}
 
-function stylePoints(feature) {
-    let pointColor = getPointColor(feature.properties[selectedFilter])
-    var geojsonMarkerOptions = {
-        radius: 5,
-        fillColor: '#FFF',
-        color: "#000",
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 1.0,
-        pane: 'locationMarker',
-    };
-    return geojsonMarkerOptions;
-}
