@@ -293,6 +293,9 @@ circle {
         visibility: hidden;
         opacity: 0%;
     }
+    .popup {
+        visibility: hidden;
+    }
   }
   .selected {
     height: 100%;
