@@ -21,7 +21,7 @@ let stateIncidentLegend = {
     quantiles: [0, 12, 31, 79, 135]
 }
 let selectedLegend = 'PCT_JEW_TO';
-let colors_5 = ['#c6e4db', '#a9c8ca', '#8cadb9', '#6f91a8', '#527697']
+let colors_5 = ['#f1eef6','#bdc9e1','#74a9cf','#2b8cbe','#045a8d']
 let legends = {"jew_pop":jewPopLegend, "incidents": stateIncidentLegend}
 function setParent(obj) {
     parent = obj;
@@ -109,7 +109,7 @@ function style(feature) {
         weight: 1.0,
         opacity: 1.0,
         color: 'black',
-        fillOpacity: 1.0,
+        fillOpacity: 0.8,
         fillColor: getColorProperty(feature.properties[property]),
         interactive:true
     }
@@ -119,7 +119,7 @@ function highlightFeature(e) {
      layer.setStyle(
         {
             opacity:0.7,
-            fillOpacity:0.8,
+            fillOpacity:0.7,
         }
     ); 
 
@@ -138,10 +138,10 @@ function updateInfoBox(feature) {
     feature = feature.properties    
     infoBox.html(`
     <h3> ${feature.NAME10}  </h3> 
-    <ul>
-    <li> Number of Incidents: ${feature.NUMPOINTS}</li>
+    <div style='width:100%; text-align:center;'>
+    <p> Number of Incidents: ${feature.NUMPOINTS}</p>
 
-     </ul>
+     </div>
      <span style='text-align:center'> Click on <b> ${feature.NAME10} </b> for more info </span>
     `)
 }

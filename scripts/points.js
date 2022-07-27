@@ -5,13 +5,13 @@ import {
     handleSidebarCollapse,
     sideBarCollapsed
 } from "./components/sidebar.js";
-const NUM_CIRCLES = 4;
+const NUM_CIRCLES = 5;
 const DEFAULT_FILL = 'white'
 const DEFAULT_STROKE = '#000'
 const HIGHLIGHT_COLOR = 'coral'
 const INNER_STROKE_WIDTH = 1.2
 const OUTER_STROKE_WIDTH = 1.4
-const MAX_FILTERS = 7;
+const MAX_FILTERS = 8;
 const COLORS = ['#40E0D0', '#CD5C5C', '#DAF7A6', '#FFC300', '#A2D9CE', '#FF5733', 'yellow', 'pink']
 let circleDrawn = '#circle' +String(0)
 let appliedColors = [];
@@ -29,7 +29,7 @@ let pointRadius;
 var currYear = 2016;
 let queryYears = false;
 let cityStateFilter;
-let legend = L.control({ position: 'bottomright' });
+let legend = L.control({ position: 'bottomleft' });
 let pointSingular = []; //data wrapper for individual cities
 let filters = {"category of place": [], "source": [],  "media":[], "target":[]}
 let filterColors = {"category of place": [], "source": [],  "media":[], 'target':[]}
@@ -588,11 +588,11 @@ function d3Layer(data) {
                                 stroke:COLORS[colorIndex],
                                 index: i,
                                 visible:false,
-                                r_add: i*2.0,
+                                r_add: i*3.0,
                                 radius: radius,
                                 coordinate:[d.geometry.coordinates[1],d.geometry.coordinates[0]],
                                 properties:d.properties,
-                                stroke_width:2.0
+                                stroke_width:2.5
                             })
                         }
                         return circs
@@ -603,7 +603,7 @@ function d3Layer(data) {
                             return 'circle' + i
                         })
                         .attr('visibility', 'hidden')
-                        .attr('stroke-width', 1.5)
+                        .attr('stroke-width', 2.0)
                         .attr('stroke-opacity', 1.0)
                         .attr('z-index', 100000)
 /*                         .filter((d) => {
@@ -660,11 +660,10 @@ function getCircleColors(d) {
         })
     
     colorsApplied.sort()
-    if (colorsApplied.length == 0) {
-        colorsApplied.push(DEFAULT_FILL)
+    colorsApplied.unshift(DEFAULT_STROKE)
+    colorsApplied.unshift(DEFAULT_FILL)
         
-    }
-    colorsApplied.push(DEFAULT_STROKE)
+    
     return colorsApplied
 }
 function defineCircleStyle() {
@@ -685,9 +684,10 @@ function defineCircleStyle() {
                 d.fill = circColors[d.index]
                 d.stroke = circColors[d.index+1]
                 d.visible = 'visible'
-                d.stroke_width = 2.0
-                if (circColors[d.index+1] == DEFAULT_STROKE) {
-                    d.stroke_width = 1.4
+                d.stroke_width = 3.0
+                if (d.stroke == DEFAULT_STROKE) {
+                    console.log('true')
+                    d.stroke_width = 1.5
 
                 }
 
@@ -910,7 +910,7 @@ const pointLegend = () => {
             header = 'Applied Filters'
             list += `<div class='point-legend-list'> <p>${key} </p>`
             for(let i =0; i<filterColors[key].length; i++) {
-                list += `<div class='point-legend-obj'>  <span style="border-radius:50%; border:0.0px solid black; background-color:${filterColors[key][i]}"> </span>${filters[key][i]} </div>`
+                list += `<div class='point-legend-obj'>  <span style="border-radius:50%; border:1px solid #000000A8; background-color:${filterColors[key][i]}"> </span>${filters[key][i]} </div>`
             }
             list += '</div>'
         }

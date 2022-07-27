@@ -18,9 +18,13 @@ function handleSidebarCollapse() {
     sideBarCollapsed = !sideBarCollapsed
     $('.map-query').toggleClass('collapsed')
     if (sideBarCollapsed) {
-        collapseBtn.html("<-")
+        collapseBtn.css( {
+            'visibility': 'hidden'
+        })
     } else {
-        collapseBtn.html("->")
+        collapseBtn.css( {
+            'visibility': 'visible'
+        })
     }
 }
 export {handleSidebarCollapse , sideBarCollapsed}
