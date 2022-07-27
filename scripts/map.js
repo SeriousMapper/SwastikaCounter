@@ -80,11 +80,11 @@ function createMap() {
 
     //add OSM base tilelayer
     map = L.map('map', {
-        minZoom: 5,
+        minZoom: 4,
         maxZoom: 9
-    }).setView([37.8, -96], 5);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    }).setView([37.8, -96], 4);
+    L.tileLayer('https://tile.jawg.io/83630003-7ed6-4e40-a284-d12ba35b033f/{z}/{x}/{y}{r}.png?access-token=iLuzn3MqdlZEZksWVEVXqX3SU6o5AWsC94JX05GU2IXGAFxHqFeTqHzSE6LwgKAJ', {
+        attribution: '&copy; <a href=\"https://www.jawg.io\" target=\"_blank\">&copy; Jawg</a> - <a href=\"https://www.openstreetmap.org\" target=\"_blank\">&copy; OpenStreetMap</a>&nbsp;contributors',
         subdomains: 'abcd'}).addTo(map);
 
 };
@@ -223,35 +223,34 @@ function loadMainMenu() {
     let pointBtn = createMenuBtn('svg/location.svg', 'Filter Incidents')
     let shareBtn = createMenuBtn('svg/share.svg', 'Share')
     let helpBtn = createMenuBtn('svg/faq.svg', 'Help')
-    let helpShare = $('<div>', {
-        css: {
-            'width': '100%'
-        }
-    })
-    helpShare.css({
-        'flex':'none'
+    let layersCont = $('<div>', {
+        class:'layers-cont sub-collapsed'
     })
 
     layerBtn.appendTo(menu)
     let stateOptions = addStateMapOptions();
     let electionOptions = addCountyMapOptions();
     let layerMenu = $('<div>', {
-        'class': 'layer-menu-cont sub-collapsed'
+        'class': 'layer-menu-cont'
     })
     layerMenu.append(stateOptions)
     layerMenu.append(electionOptions)
     
-    layerBtn.append(layerMenu)
+    layerMenu.appendTo(layersCont)
+    layersCont.appendTo(menu)
 
     layerBtn.on('click', () => {
-        layerMenu.toggleClass('sub-collapsed')
+        layersCont.toggleClass('sub-collapsed')
+        $('#menu').toggleClass('selected')
+        pointBtn.toggleClass('mobile-btn-hide')
+        shareBtn.toggleClass('mobile-btn-hide')
+        helpBtn.toggleClass('mobile-btn-hide')
     })
 
     pointBtn.appendTo(menu)
     pointBtn.attr('id', 'point-filter-btn')
-    shareBtn.appendTo(helpShare)
-    helpBtn.appendTo(helpShare)
-    helpShare.appendTo(menu)
+    shareBtn.appendTo(menu)
+    helpBtn.appendTo(menu)
 }
 
 function createMenuBtn(icon, text) {
@@ -261,6 +260,7 @@ function createMenuBtn(icon, text) {
     let btnContainer = $('<div>', {
         'class': 'menu-btn',
     })
+
     let svg = $('<img>', {
         'class': 'icon',
         'src':icon
@@ -269,7 +269,6 @@ function createMenuBtn(icon, text) {
         'html':text,
         'class': 'menu-btn-text'
     })
-
     svg.appendTo(btnContainer)
     btn.appendTo(btnContainer)
     btnContainer.appendTo(menuCont)
