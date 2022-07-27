@@ -294,7 +294,7 @@ circle {
         opacity: 0%;
     }
     .popup {
-        visibility: hidden;
+        opacity: 0%;
     }
   }
   .selected {
