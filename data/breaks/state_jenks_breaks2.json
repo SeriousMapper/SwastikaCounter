@@ -32,14 +32,6 @@
         "NAME": "Percent Black"
     },
 
-    "PCT_JEW_AD": {
-        "JENK_BREAKS": [0, 0.005, 0.011, 0.019, 0.041, 0.055],
-        "QUAN_BREAKS": [0.0, 0.003, 0.006, 0.009, 0.017],
-        "MIN": 0.001,
-        "MAX": 0.055,
-        "MEAN": 0.0112692308,
-        "NAME": "Percent Jewish Adults"
-    },
     "PCT_JEW_TO": {
         "JENK_BREAKS": [0, 0.009, 0.018, 0.032, 0.051, 0.084],
         "QUAN_BREAKS": [0.0, 0.005, 0.008, 0.015, 0.027],
@@ -47,14 +39,6 @@
         "MAX": 0.084,
         "MEAN": 0.0179615385,
         "NAME": "Percent Jewish Total"
-    },
-    "NUMPOINTS": {
-        "JENK_BREAKS": [0, 14, 31, 79, 135, 211],
-        "QUAN_BREAKS": [0, 4, 7, 17, 30],
-        "MIN": 0,
-        "MAX": 211,
-        "MEAN": 25.5961538462,
-        "NAME": "Reported Incidents"
     },
     "NORM_NUM": {
         "JENK_BREAKS": [0, 0.297, 0.665, 1.147, 1.833, 2.659],

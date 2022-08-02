@@ -160,6 +160,7 @@ function loadFilterMenu() {
             refreshLegend();
             
             filterPoints();
+            checkAppliedFilterCount()
         })
         btn.on('mouseover', () => {
             highlightPoints(filter, property)
@@ -188,10 +189,40 @@ function loadFilterMenu() {
     }).appendTo(header)
 
 
+    let resetFilterBtn = $('<button>', {
+        'class': ' reset-filter-btn',
+        'id': 'filter-reset',
+        'html': 'Reset Filters',
+        'css': {'visibility': 'hidden'}
+    })
+    resetFilterBtn.on('click', () => {
+        let keys = Object.keys(filters)
+        keys.forEach((filterGroup) => {
+            if(filters[filterGroup].length > 0) {
+                filters[filterGroup].forEach( (filter) => {
+                    let checkBoxId = ('checkbox-' + filterGroup + filter).replaceAll(' ', '-')
+                    $(`#${checkBoxId}`).prop('checked', false)
+                    let btnId = ('button-' + filterGroup + filter).replaceAll(' ', '-')
+                    $(`#${btnId}`).remove()
+                })
+                filters[filterGroup] = []
+                filterColors[filterGroup] = []
+            }
+        })
+        appliedFilters = 0
+        appliedColors = []
+        refreshLegend();
+            
+        filterPoints();
+        checkAppliedFilterCount();
+        
+
+    })
     let filterList = $('<div>', {
         'class': 'point-query-filters',
         html: '<h4> Applied Filters: </h4>',
     })
+    resetFilterBtn.appendTo(header)
     header.appendTo(container)
     filterList.appendTo(container)
     pointFilterWindow.appendTo(container)
@@ -268,6 +299,11 @@ function loadFilterMenu() {
                     
                     appliedFilters += 1
 
+                    $('#filter-reset').css({
+                        'visibility': 'visible'
+                    })
+                    
+
                     
 
                 } else {
@@ -279,6 +315,7 @@ function loadFilterMenu() {
                     appliedFilters -= 1
                     let btnId = ('button-' + filter + property).replaceAll(' ', '-')
                     $(`#${btnId}`).remove()
+                    checkAppliedFilterCount()
                     
                 }
                 
@@ -313,6 +350,13 @@ function loadFilterMenu() {
     })
     
 }
+function checkAppliedFilterCount() {
+    if (appliedFilters == 0) {
+        $('#filter-reset').css( {
+            'visibility':'hidden'
+        })
+    }
+}
 function getNextColor() {
     for(let i=0; i<COLORS.length; i++) {
         if(!appliedColors.includes(COLORS[i])) {
@@ -323,9 +367,7 @@ function getNextColor() {
     return('#FFF')
 }
 function removeColor(color) {
-    console.log(color)
     let index = appliedColors.indexOf(color)
-    console.log(index)
     appliedColors.splice(index, 1)
 }
 var tooltip = d3.select("body")
@@ -681,12 +723,15 @@ function defineCircleStyle() {
             d.stroke = 'none'
             d.fill ='none'
             if(NUM_CIRCLES - i <= circlesDrawn) {
+
                 d.fill = circColors[d.index]
-                d.stroke = circColors[d.index+1]
+                if(typeof(circColors[d.index+1]) != 'undefined') {
+                    d.stroke = circColors[d.index+1]
+                }
+                
                 d.visible = 'visible'
                 d.stroke_width = 3.0
                 if (d.stroke == DEFAULT_STROKE) {
-                    console.log('true')
                     d.stroke_width = 1.5
 
                 }
