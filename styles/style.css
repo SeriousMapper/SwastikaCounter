@@ -237,8 +237,10 @@ circle {
     max-width: 400px;
     width:250px;
     height:100%;
+    overflow: hidden;
     transition-duration: 0.4s;
     border-right: 2px solid black;
+    z-index: 1;
     
 }
 .extended {
