@@ -134,6 +134,17 @@ img {
 .mobile-btn-hide {
     visibility: visible;
 }
+.help-menu-container {
+    height:100%;
+    width:100%;
+    background-color:#F6F6F4;
+    transition: 0.2s all;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    
+    
+}
 @media only screen and (max-width: 600px) {
     .map-filters {
         flex-direction: row;

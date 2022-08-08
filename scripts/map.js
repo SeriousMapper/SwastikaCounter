@@ -217,7 +217,9 @@ function addStateMapOptions() {
 
 
 function loadMainMenu() {
+    loadHelpMenu();
     let menu = $('#map-menu')
+    let notifierActive = false
     menu.html('')
     let layerBtn = createMenuBtn('svg/layer-icon.svg', 'Layers')
     let pointBtn = createMenuBtn('svg/location.svg', 'Filter Incidents')
@@ -246,11 +248,45 @@ function loadMainMenu() {
         shareBtn.toggleClass('mobile-btn-hide')
         helpBtn.toggleClass('mobile-btn-hide')
     })
+    helpBtn.on('click', ()=> {
+        $('#help-menu').toggleClass('menu-collapsed')
+        $('#map-menu').toggleClass('menu-collapsed')
+        $('#menu').toggleClass('extended')  
+    })
 
     pointBtn.appendTo(menu)
     pointBtn.attr('id', 'point-filter-btn')
     shareBtn.appendTo(menu)
     helpBtn.appendTo(menu)
+
+    let shareBtnNotfier = () => {
+        let cont = $('<div>', {
+            'class':'share-btn-notifier-cont'
+        })
+        let notifier = $('<div>', {
+            'class':'share-btn-notifier hide',
+            'id':'share-notification',
+            'active': 'false'
+        })
+        let tooltip = $('<div>', {
+            'class':'notifier-tooltip'
+        })
+        tooltip.appendTo(notifier)
+        notifier.appendTo(cont)
+        return cont
+    }
+    shareBtn.on('click', ()=> {
+        navigator.clipboard.writeText('https://seriousmapper.github.io/SwastikaCounter/');
+        if(notifierActive == false) {
+            $('#share-notification').toggleClass('hide')
+            notifierActive = true
+            setTimeout( ()=> {
+                $('#share-notification').toggleClass('hide') 
+                notifierActive = false
+            }, 2000)
+        }
+
+    })
 }
 
 function createMenuBtn(icon, text) {
@@ -310,7 +346,67 @@ function clearCurrentLayer() {
     }
 }
 
+function loadHelpMenu() {
+    let mapQueryDiv = $('#help-menu')
+    let header = $('<div/>', {
+        'class': 'point-query-header',
+        html: '<h2> Frequently Asked Questions </h2>'
+    });
+    let backBtn = $('<button>', {
+        html: 'Go Back'
+    })
+    let container = $('<div/>', {
+        'class': "point-query-container",
+        
+    })
+    let window = $('<div>', {
+        'class':'point-filter-window'
+    })
 
+    backBtn.on('click', ()=> {
+        $('#help-menu').toggleClass('menu-collapsed')
+        $('#map-menu').toggleClass('menu-collapsed')
+        $('#menu').toggleClass('extended')      
+    })
+    backBtn.appendTo(header)
+    container.appendTo(mapQueryDiv)
+    header.appendTo(container)
+    window.appendTo(container)
+    let questions =["How do I view info for a certain city?",
+    
+    "Can I see the demographic data for a county or state?",
+    "Where did all of the points (reported incidents) go?",
+    "How do I change the legend so that I can see different patterns?", 
+    "How can I change or remove the base map layer?",
+    "How can I filter the reported incidents?",
+    "How can I change the time range for the reported incidents?"]
+    let answers = ["You can view the info for a certain city by simply clicking on a city within the map. You can view the date of discovery, the website linked to the sighting, and information such as the place and source of publication.",
+"Yes, you can! By clicking on a state you can view more detailed demographic data such as the population characteristics.",
+"You may have applied a filter that has no visible point data. There is also currently a bug in which the points are drawn below the other layers. Try refreshing the page.",
+"You can change the legend by hover over the 'Change Legend' menu on the left side of the screen, then you may select a different legend in the dropdown menu. Legends are represented by quantiles.",
+"You can change the displayed layer by hovering over the 'Layers' menu on the left side of the screen. After doing so, you may select the Elecotral Map (by county), Demographic Map (by state) or clear the layers, and display just the reported incidents.",
+"You may filter the reported incidents by clicking the 'Filter Incidents' button on the left side of the screen. After doing so, a menu will appear in this panel. You can add the desired filters and remove them as well.",
+"On the bottom-left side of the map, there is a time range slider in which you may select your desired time range. You can click the left and right handles to filter the reported incidents in monthly increments. You can also click on the center of the bar to move the selected time range around."]
+    for(let i=0; i<questions.length; i ++) {
+        var questionCard = $("<div/>", {
+            className: 'questionCard',
+            css: {
+                'text-align':'left',
+                'padding':'10px'
+            }
+        })
+        var question = $('<h4>', {
+            html:questions[i]
+        })
+        var answer = $('<p>', {
+            html:answers[i]
+        })
+        question.appendTo(questionCard)
+        answer.appendTo(questionCard)
+        questionCard.appendTo(window)
+    }
+
+}
 
 
 
