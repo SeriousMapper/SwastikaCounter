@@ -6,7 +6,7 @@ let infoBox = $('.infoBox')
 const breaks = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 const demColors = ['#a5b0ff', '#8e99fd', '#7881f9', '#6369f4', '#4e4fed', '#3933e5']
 const gopColors = ['#ffb2b2', '#f29390', '#e4746e', '#d2554b', '#be3428', '#a80000']
-const years = ['12', '16', '20']
+const years = ['16', '20']
 let selectedYear = '16'
 export {loadLayer, storeData, clearLayer, resetMapLayer, data }
 function storeData(json) {

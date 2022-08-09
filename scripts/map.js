@@ -81,7 +81,10 @@ function createMap() {
     //add OSM base tilelayer
     map = L.map('map', {
         minZoom: 4,
-        maxZoom: 9
+        maxZoom: 9,
+        scrollWheelZoom: false,
+        smoothWheelZoom: true,
+        smoothSensitivity: 1,
     }).setView([37.8, -96], 4);
     L.tileLayer('https://tile.jawg.io/83630003-7ed6-4e40-a284-d12ba35b033f/{z}/{x}/{y}{r}.png?access-token=iLuzn3MqdlZEZksWVEVXqX3SU6o5AWsC94JX05GU2IXGAFxHqFeTqHzSE6LwgKAJ', {
         attribution: '&copy; <a href=\"https://www.jawg.io\" target=\"_blank\">&copy; Jawg</a> - <a href=\"https://www.openstreetmap.org\" target=\"_blank\">&copy; OpenStreetMap</a>&nbsp;contributors',
@@ -149,7 +152,7 @@ async function getData(map) {
     
 };
 function addCountyMapOptions() {
-    const options = [12, 16, 20]
+    const options = [16, 20]
     let optionCont = $('<div>', {
         'class': 'label-menu',
         'html': '<h4> Electoral </h4>'
@@ -217,7 +220,6 @@ function addStateMapOptions() {
 
 
 function loadMainMenu() {
-    loadHelpMenu();
     let menu = $('#map-menu')
     let notifierActive = false
     menu.html('')
@@ -225,6 +227,10 @@ function loadMainMenu() {
     let pointBtn = createMenuBtn('svg/location.svg', 'Filter Incidents')
     let shareBtn = createMenuBtn('svg/share.svg', 'Share')
     let helpBtn = createMenuBtn('svg/faq.svg', 'Help')
+    let helpExit = $('<button>', {
+        'html': 'Go Back'
+    })
+    helpExit.appendTo('#help-header')
     let layersCont = $('<div>', {
         class:'layers-cont sub-collapsed'
     })
@@ -253,39 +259,36 @@ function loadMainMenu() {
         $('#map-menu').toggleClass('menu-collapsed')
         $('#menu').toggleClass('extended')  
     })
+    helpExit.on('click', ()=> {
+        $('#help-menu').toggleClass('menu-collapsed')
+        $('#map-menu').toggleClass('menu-collapsed')
+        $('#menu').toggleClass('extended')          
+    })
 
     pointBtn.appendTo(menu)
     pointBtn.attr('id', 'point-filter-btn')
     shareBtn.appendTo(menu)
     helpBtn.appendTo(menu)
 
-    let shareBtnNotfier = () => {
-        let cont = $('<div>', {
-            'class':'share-btn-notifier-cont'
-        })
-        let notifier = $('<div>', {
-            'class':'share-btn-notifier hide',
-            'id':'share-notification',
-            'active': 'false'
-        })
-        let tooltip = $('<div>', {
-            'class':'notifier-tooltip'
-        })
-        tooltip.appendTo(notifier)
-        notifier.appendTo(cont)
-        return cont
-    }
-    shareBtn.on('click', ()=> {
-        navigator.clipboard.writeText('https://seriousmapper.github.io/SwastikaCounter/');
-        if(notifierActive == false) {
-            $('#share-notification').toggleClass('hide')
-            notifierActive = true
-            setTimeout( ()=> {
-                $('#share-notification').toggleClass('hide') 
-                notifierActive = false
-            }, 2000)
-        }
 
+    shareBtn.on('click', ()=> {
+        $('#share-menu').toggleClass('menu-collapsed')
+        $('#map-menu').toggleClass('menu-collapsed')
+        $('#menu').toggleClass('extended')             
+    })
+    $('#share-back').on('click', ()=> {
+        $('#share-menu').toggleClass('menu-collapsed')
+        $('#map-menu').toggleClass('menu-collapsed')
+        $('#menu').toggleClass('extended')          
+    })
+    $('#copy-site').on('click', ()=> {
+        var copyText = $('#website')[0];
+        console.log(copyText)
+        navigator.clipboard.writeText(copyText.value);
+    })
+    $('#copy-map').on('click', ()=> {
+        var copyText = $('#full-map')[0];
+        navigator.clipboard.writeText(copyText.value);
     })
 }
 
@@ -346,67 +349,7 @@ function clearCurrentLayer() {
     }
 }
 
-function loadHelpMenu() {
-    let mapQueryDiv = $('#help-menu')
-    let header = $('<div/>', {
-        'class': 'point-query-header',
-        html: '<h2> Frequently Asked Questions </h2>'
-    });
-    let backBtn = $('<button>', {
-        html: 'Go Back'
-    })
-    let container = $('<div/>', {
-        'class': "point-query-container",
-        
-    })
-    let window = $('<div>', {
-        'class':'point-filter-window'
-    })
 
-    backBtn.on('click', ()=> {
-        $('#help-menu').toggleClass('menu-collapsed')
-        $('#map-menu').toggleClass('menu-collapsed')
-        $('#menu').toggleClass('extended')      
-    })
-    backBtn.appendTo(header)
-    container.appendTo(mapQueryDiv)
-    header.appendTo(container)
-    window.appendTo(container)
-    let questions =["How do I view info for a certain city?",
-    
-    "Can I see the demographic data for a county or state?",
-    "Where did all of the points (reported incidents) go?",
-    "How do I change the legend so that I can see different patterns?", 
-    "How can I change or remove the base map layer?",
-    "How can I filter the reported incidents?",
-    "How can I change the time range for the reported incidents?"]
-    let answers = ["You can view the info for a certain city by simply clicking on a city within the map. You can view the date of discovery, the website linked to the sighting, and information such as the place and source of publication.",
-"Yes, you can! By clicking on a state you can view more detailed demographic data such as the population characteristics.",
-"You may have applied a filter that has no visible point data. There is also currently a bug in which the points are drawn below the other layers. Try refreshing the page.",
-"You can change the legend by hover over the 'Change Legend' menu on the left side of the screen, then you may select a different legend in the dropdown menu. Legends are represented by quantiles.",
-"You can change the displayed layer by hovering over the 'Layers' menu on the left side of the screen. After doing so, you may select the Elecotral Map (by county), Demographic Map (by state) or clear the layers, and display just the reported incidents.",
-"You may filter the reported incidents by clicking the 'Filter Incidents' button on the left side of the screen. After doing so, a menu will appear in this panel. You can add the desired filters and remove them as well.",
-"On the bottom-left side of the map, there is a time range slider in which you may select your desired time range. You can click the left and right handles to filter the reported incidents in monthly increments. You can also click on the center of the bar to move the selected time range around."]
-    for(let i=0; i<questions.length; i ++) {
-        var questionCard = $("<div/>", {
-            className: 'questionCard',
-            css: {
-                'text-align':'left',
-                'padding':'10px'
-            }
-        })
-        var question = $('<h4>', {
-            html:questions[i]
-        })
-        var answer = $('<p>', {
-            html:answers[i]
-        })
-        question.appendTo(questionCard)
-        answer.appendTo(questionCard)
-        questionCard.appendTo(window)
-    }
-
-}
 
 
 

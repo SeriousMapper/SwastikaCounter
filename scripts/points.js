@@ -940,7 +940,8 @@ const pointLegend = () => {
         
         //Step 1: start attribute legend svg string
         var svg =  '<svg id="attribute-legend">';
-  
+        var legend_over = '';
+        var paths = '<g>';
         //array of circle names to base loop on
         var circles = [40,20,5,1];
   
@@ -949,22 +950,24 @@ const pointLegend = () => {
           //calculate r and cy
           var radius = pointRadius(circles[i]);
           var cy = 59 - radius;
-  
+          var textY = i * 12 + 20;
+          paths += '<path d="M '+(60) +' ' + (textY -5) + ' 30 ' + (textY-5) + ' V ' + textY+'"  stroke="black" stroke-width="0.2"  fill="none"/>';
           //circle string
-          svg +=
+          legend_over +=
             '<circle class="legend-circle" id="' +
             circles[i] +
             '" r="' +
             radius +
             '"cy="' +
             cy +
-            '" fill="white" fill-opacity="1.0" stroke="black" stroke-opacity="0.5" stroke-width="2.0" cx="30"/>';
+            '" fill="white" fill-opacity="1.0" stroke="black" stroke-opacity="0.5" stroke-width="2.0" cx="30"/>'
+            ;
   
           //evenly space out labels
           var textY = i * 12 + 20;
   
           //text string
-          svg +=
+          legend_over +=
             '<text id="' +
             circles[i] +
             '-text" x="80" y="' +
@@ -973,9 +976,13 @@ const pointLegend = () => {
             circles[i] +
 
             "</text>";
+            
         }
   
         //close svg string
+        
+        svg += legend_over
+        svg += paths + '</g>'
         svg += "</svg> ";
   
         //add attribute legend svg to container

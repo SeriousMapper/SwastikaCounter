@@ -282,7 +282,7 @@ circle {
         border-bottom: 3px solid rgba(0, 0, 0, 0.192);
     }
     .container {
-        flex-flow: column;
+        flex-flow: column-reverse;
     }
     .extended {
         width:100%;
