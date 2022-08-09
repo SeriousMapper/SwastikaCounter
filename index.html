@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="styles/time-slider.css">
     <link rel="stylesheet" href="styles/filter-menu.css">
     <link rel="stylesheet" href="styles/style.css">
-    
+    <link rel="stylesheet" href="styles/help-menu.css">
     
     
     <title>Swastika Counter Map</title>
@@ -21,6 +21,7 @@
     <script src="lib/leaflet-src.js"></script>
     <script src="lib/jquery-3.6.0.js"> </script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="lib/SmoothWheelZoom.js"></script>
 </head>
 
 <body>
@@ -62,12 +63,103 @@
             </div>
         <div class="menu-child">
             <div class="help-menu-container menu-collapsed" id='help-menu'>
-                
+                <div class="section">
+                    <div class="header" id="help-header">
+                        <h3>Frequently Asked Questions</h3>
+            
+                    </div>
+                    <div class="question-window">
+                    <div class="question-card">
+                        <h4> How can I change the layer that is displayed on the map?</h4>
+                        <p> You may change the layer by clicking on the 'Layers' button on the left side of the screen <i>(on the top portion if using mobile)</i>. There are two different types of layers: Demographic and Electoral.
+                            Demographic allows you to see demographic information such as the percent of white population per state, or the number of reported incidents per 100,000 people.
+                            The electoral layers allow you to view the majority votes for Democratic and Republican parties by county.
+                        </p>
+                    </div>
+                    <div class="question-card">
+                        <h4> How can I filter the points (reported incidents) that are displayed on the map?</h4>
+                        <p> You may filter the points by clicking on the 'Filter Incidents' button on the left side of the screen <i>(on the top portion if using mobile)</i>
+                        You can filter by: category of place (such as schools or private residence), the source of the incident (such as national or local news), the type of media used 
+                        (such as paint or ink), and the target of the incident (such as Jewish communities or African-American communities).
+            
+                          <br> <br>At the bottom of the 'Filter Incidents' menu, there is a time slider which allows you to filter
+                          
+                    the incidents by a selected time range. Simply select either end of the time range and drag it to your desired filter.
+                    <br> <br>
+                    This will filter the incidents on the map and allow you to see these incidents with more precision, along with a color coded legend.</p>
+                    </div>
+                    <div class="question-card">
+                        <h4>How do I reset the filters, or remove certain filters that I have applied?</h4>
+                        <p> You can reset <i><b>all</b></i> of the filters by clicking on the 'Reset Filters' button on the top right portion of the 'Filter Incidents' menu.</p>
+                        <p>To remove a certain filters, you may either click on the filter at the top portion of the filtering menu, under the 'Applied Filters'. You can also click on the
+                            filter itself under it's designated category.
+                        </p>
+                    </div>
+                    <div class="question-card">
+                        <h4>How do I interpret the applied filters on the map?</h4>
+                        <p>If you have applied filters onto the map, the filters will be designated by the outline on the points below. </p><p> For example, let's say that we have applied a filter for college campuses and the source of the incident is a student newspaper.
+            
+                        </p>
+                        <div class="centered-100" style="background-color:white; background-image: url('img/example-background.png');">
+                        <svg >
+                            <g>
+                                <circle r='22' fill='red' stroke='turquoise' stroke-width='4' cx='50px' cy='50px'/>
+                                <circle r='14' fill='white' stroke='black' stroke-width='4' cx='50px' cy='50px'/>
+                            </g>
+                        </svg>
+                    </div>
+                        <div class="example-legend-box">
+                        <div style="background-color:red; width:10px; height:10px; margin:5px;"></div> College
+                    </div>
+                    <div class="example-legend-box">
+                        <div style="background-color:turquoise; width:10px; height:10px; margin:5px;"></div> Student Newspaper
+                    </div>
+                    <p>As you can see in this example, the filters that are applied are indicated by the <i>color of the outlines</i> of the city in which both of these incidents occur.
+                    </p><p>The red outline indicates that a swastika has been reported on a college campus, and the blue outline indicates that there is a swastika incident reported by a student newspaper.</p>
+                    <p>In addition, the time slider will filter the points and only show the incidents that are within the desired time range.</p>
+                </div>
+                <div class="question-card">
+                    <h4>How do I look further into the reported incidents within a city?</h4>
+                    <p>Simply click on the desired city and the information will be visible on the right hand side of the screen (if using a desktop computer). </p><p>You can view the info for each incident within this window,
+                        and an image (if available).
+                    </p>
+                    <p>If you have applied a filter you may see this on the top portion of the window:</p>
+                    <img src='img/filter-example.png'/>
+                    <p> If you would like to view all of the incidents, please click on "Show All Data for City, State" to view every incident within this city.</p>
+                </div>
+                <div class="question-card">
+                    <h4>How do I view more detailed information of a state?</h4>
+                    <p> You can view more demographic information by clicking on the state. As you hover over a state, it will highlight and you may click on the state to view more detailed demographic information such as population density and population demographics.</p>
+                </div>
+                </div>
+            </div>
             </div>
 
 
         </div>
+        <div class="menu-child">
+            <div class="help-menu-container menu-collapsed" id='share-menu'>
+                <div class="section">
+                    <div class="header" id="share-header">
+                        <h3>Share</h3>
+                        <button id="share-back">Go back</button>
+                        
+                    </div>
+                    <div class="question-card">
+                        Map:
+                    <input type="text" value="https://seriousmapper.github.io/SwastikaCounter/" id="full-map">
+                    <button id="copy-map"> Copy to clipboard</button>
+                </div>
+                <div class="question-card">
+                    Swastika Counter Website:
+                <input type="text" value="https://theswastikacounter.org/" id="website">
+                <button id="copy-site"> Copy to clipboard</button>
+            </div>
         </div>
+        </div>
+        </div>
+        </div>
+    
         </div>
 
             <div class="map-container">
