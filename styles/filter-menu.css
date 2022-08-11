@@ -102,7 +102,6 @@ input[type="checkbox"]  {
  }
  input[type="checkbox"]:checked + label{
      font-weight: 600;
-     color:#616161;
 
  }
  
