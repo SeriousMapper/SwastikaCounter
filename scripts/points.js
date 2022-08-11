@@ -113,6 +113,9 @@ function loadFilterMenu() {
             let btnId = ('button-' + filter + property).replaceAll(' ', '-')
             $(`#${btnId}`).remove()
             refreshLegend();
+            $('#label-'+checkBoxId).css({
+                'color':"rgb(150, 150, 150)",
+            })
             
             filterPoints();
             checkAppliedFilterCount()
@@ -159,6 +162,9 @@ function loadFilterMenu() {
                     $(`#${checkBoxId}`).prop('checked', false)
                     let btnId = ('button-' + filterGroup + filter).replaceAll(' ', '-')
                     $(`#${btnId}`).remove()
+                    $('#label-'+checkBoxId).css({
+                        'color':"rgb(150, 150, 150)",
+                    })
                 })
                 filters[filterGroup] = []
                 filterColors[filterGroup] = []
@@ -257,6 +263,10 @@ function loadFilterMenu() {
                     $('#filter-reset').css({
                         'visibility': 'visible'
                     })
+                    $('#label-'+checkBoxId).css({
+                        'color':color,
+                    })
+                    //default color: rgb(150, 150, 150)
                     
 
                     
@@ -271,6 +281,10 @@ function loadFilterMenu() {
                     let btnId = ('button-' + filter + property).replaceAll(' ', '-')
                     $(`#${btnId}`).remove()
                     checkAppliedFilterCount()
+                    $('#label-'+checkBoxId).css({
+                        'color':"rgb(150, 150, 150)",
+                    })
+                    //default color: rgb(150, 150, 150)
                     
                 }
                 
@@ -289,7 +303,9 @@ function loadFilterMenu() {
             
             let checkBoxLabel = $('<label/>', {
                 for: checkBoxId,
-                html: `${propertyText} <b> (${group.get(property).length}) </b>`
+                html: `${propertyText} <b> (${group.get(property).length}) </b>`,
+                id: "label-" + checkBoxId
+
 
             })
             checkBoxLabel.on('mouseenter', () => {
@@ -762,6 +778,12 @@ function populateQuery(features) {
 }
 
 function loadCard(properties) {
+    const checkTarget = ()=>{
+        if(properties['target'] != '') {
+            return(`<li> <b>Target:</b> ${properties['target']} </li>`)
+        }
+        return ''
+    }
     return `<div class="query-card">
     <ul>
         <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
@@ -770,6 +792,7 @@ function loadCard(properties) {
         <li> <b>Category of Place:</b> ${properties['category of place']} </li>
         <li> <b>Place:</b> ${properties['place']} </li>
         <li> <b>Structure:</b> ${properties['structure']} </li>
+        ${checkTarget()}
         <li> <b>Media:</b> ${properties['media']} </li>
         
         
