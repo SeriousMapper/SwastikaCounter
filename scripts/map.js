@@ -77,7 +77,10 @@ async function initialize() {
 function createMap() {
     //create the map
 
-
+    var maxBounds = L.latLngBounds(
+        L.latLng(5.499550, -167.276413), //Southwest
+        L.latLng(83.162102, -52.233040)  //Northeast
+    );
     //add OSM base tilelayer
     map = L.map('map', {
         minZoom: 4,
@@ -89,7 +92,6 @@ function createMap() {
     L.tileLayer('https://tile.jawg.io/83630003-7ed6-4e40-a284-d12ba35b033f/{z}/{x}/{y}{r}.png?access-token=iLuzn3MqdlZEZksWVEVXqX3SU6o5AWsC94JX05GU2IXGAFxHqFeTqHzSE6LwgKAJ', {
         attribution: '&copy; <a href=\"https://www.jawg.io\" target=\"_blank\">&copy; Jawg</a> - <a href=\"https://www.openstreetmap.org\" target=\"_blank\">&copy; OpenStreetMap</a>&nbsp;contributors',
         subdomains: 'abcd'}).addTo(map);
-
 };
 function loadPanes() {
     map.createPane("locationMarker")

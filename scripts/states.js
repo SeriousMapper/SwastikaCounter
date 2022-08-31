@@ -22,12 +22,13 @@ let stateIncidentLegend = {
 }
 let selectedLegend = 'PCT_JEW_TO';
 let colors_5 = ['#f1eef6','#bdc9e1','#74a9cf','#2b8cbe','#045a8d']
-let legends = {"jew_pop":jewPopLegend, "incidents": stateIncidentLegend}
+
+
 function setParent(obj) {
     parent = obj;
 }
 async function loadBreaks() {
-    await fetch("data/breaks/state_jenks_breaks2.json")
+    await fetch("data/breaks/state_jenks_breaks.json")
 .then(response => {
    return response.json();
 })
@@ -153,12 +154,12 @@ function loadCensusData(feature) {
     <div class='point-query-container'> 
     <div class='point-query-header'> 
     
-    <h2> ${props.NAME10} </h2> <h4> Reported Incidents: ${props.NUMPOINTS} 
+    <h2> ${props.NAME10} </h2> <h4> Reported Incidents: ${props.NUMPOINTS} </h4>
+    <b> Reported Incidents per 100,000 people: </b> ${((props.NUMPOINTS/props.POP_TOTAL) * 100000).toFixed(2)}
     </div> 
     <div class="relative-fill">
     <div class="point-queries">
     <div class = "state-info-container">
-    
     <h3> Demographics </h3>
     <p> Demographic data is obtained from the <a href="https://www.census.gov/"> U.S Census Bureau </a> and the <a href="https://ajpp.brandeis.edu"> American Jewish Population Project</a>.
     <ul> 
