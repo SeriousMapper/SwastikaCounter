@@ -164,6 +164,7 @@ function loadFilterMenu() {
                     $(`#${btnId}`).remove()
                     $('#label-'+checkBoxId).css({
                         'color':"rgb(150, 150, 150)",
+                        'text-shadow': 'none'
                     })
                 })
                 filters[filterGroup] = []
@@ -264,7 +265,7 @@ function loadFilterMenu() {
                         'visibility': 'visible'
                     })
                     $('#label-'+checkBoxId).css({
-                        'color':color,
+                        'color':color
                     })
                     //default color: rgb(150, 150, 150)
                     
@@ -283,6 +284,7 @@ function loadFilterMenu() {
                     checkAppliedFilterCount()
                     $('#label-'+checkBoxId).css({
                         'color':"rgb(150, 150, 150)",
+                        'text-shadow': 'none'
                     })
                     //default color: rgb(150, 150, 150)
                     
@@ -884,7 +886,7 @@ const xAxis = d3.axisBottom(x)
 .ticks(5); //5 year data range
 
 const brush = d3.brushX()
-    .extent([[0, 0], [width -30 , height]])
+    .extent([[0, 0], [width , height]])
     .on("brush", brushed)
 
 
