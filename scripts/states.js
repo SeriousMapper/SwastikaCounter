@@ -224,10 +224,17 @@ legend.onAdd = function (map) {
     for (var i = 0; i < grades.length; i++) {
         from = grades[i];
         to = grades[i + 1];
-
+        let label = quantile[i]
+        let next_label = quantile[i+1]
+        let max = legendSel.MAX
+        if (selectedLegend.startsWith('PCT')) {
+            label = (label *100).toFixed(2)
+            next_label = (next_label *100).toFixed(2)
+            max = (legendSel.MAX * 100).toFixed(2)
+        }
         labels.push(
             '<i style="background:' + getColorProperty(from + 0.00001) + '"></i> ' +
-            quantile[i] + (quantile[i+1] ? ' &ndash; ' + quantile[i+1] : ' &ndash; ' + legendSel.MAX));
+            label + (quantile[i+1] ? ' &ndash; ' + next_label : ' &ndash; ' + max));
     }
 
     div.innerHTML = `<h3> ${legendSel.NAME} </h3>`  + labels.join('<br style="margin-bottom: 4px">');

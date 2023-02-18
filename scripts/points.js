@@ -786,6 +786,13 @@ function loadCard(properties) {
         }
         return ''
     }
+    const checkImg =  () => {
+        if (properties.url_to_jpg != "") {
+            return `<li> <b> Image</b>: <a href= "${properties['url_to_jpg']}" target="_blank"> ${properties['url_to_jpg'].substring(0, 25)}... </a> </li>`
+        }
+        return ''
+    }
+    console.log(properties.url_to_jpg == "")
     return `<div class="query-card">
     <ul>
         <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
@@ -796,10 +803,10 @@ function loadCard(properties) {
         <li> <b>Structure:</b> ${properties['structure']} </li>
         ${checkTarget()}
         <li> <b>Media:</b> ${properties['media']} </li>
-        
+        ${checkImg()}
         
     </ul>
-    <img src= "${properties['url_to_jpg']}" />
+    
 </div>`
 }
 
