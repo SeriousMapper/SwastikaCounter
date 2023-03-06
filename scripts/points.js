@@ -33,6 +33,7 @@ let legend = L.control({ position: 'bottomleft' });
 let pointSingular = []; //data wrapper for individual cities
 let filters = {"category of place": [], "source": [],  "media":[], "target":[]}
 let filterColors = {"category of place": [], "source": [],  "media":[], 'target':[]}
+let showImagesOnly = true;
 let pointPane;
 
 let filterLegend = L.control({ position: 'bottomright' });
@@ -518,7 +519,6 @@ function filterPoints() {
         }
         return false
     })
-    
     filter
     
     .selectAll('circle')
@@ -781,18 +781,17 @@ function populateQuery(features) {
 
 function loadCard(properties) {
     const checkTarget = ()=>{
-        if(properties['target'] != '') {
+        if(properties['target'] != 'none') {
             return(`<li> <b>Target:</b> ${properties['target']} </li>`)
         }
         return ''
     }
     const checkImg =  () => {
-        if (properties.url_to_jpg != "") {
-            return `<li> <b> Image</b>: <a href= "${properties['url_to_jpg']}" target="_blank"> ${properties['url_to_jpg'].substring(0, 25)}... </a> </li>`
+        if (properties['Image?'] == true) {
+            return `<li> <b> Image</b>: <a href= "${properties['img_link']}" target="_blank"> ${properties['img_link'].substring(0, 25)}... </a> </li>`
         }
         return ''
     }
-    console.log(properties.url_to_jpg == "")
     return `<div class="query-card">
     <ul>
         <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
