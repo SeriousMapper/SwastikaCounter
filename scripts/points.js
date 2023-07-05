@@ -31,8 +31,8 @@ let queryYears = false;
 let cityStateFilter;
 let legend = L.control({ position: 'bottomleft' });
 let pointSingular = []; //data wrapper for individual cities
-let filters = {"category of place": [], "source": [],  "media":[], "target":[]}
-let filterColors = {"category of place": [], "source": [],  "media":[], 'target':[]}
+let filters = {"site of documented incident": [], "source": [],  "media":[], "target":[]}
+let filterColors = {"site of documented incident": [], "source": [],  "media":[], 'target':[]}
 let showImagesOnly = true;
 let pointPane;
 
