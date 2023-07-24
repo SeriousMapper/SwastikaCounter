@@ -795,13 +795,10 @@ function loadCard(properties) {
     return `<div class="query-card">
     <ul>
         <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
-        <li> <b>Source:</b> ${properties['source']}</li>
         <li> <b>Website:</b> <a href="${properties['website']}" target="_blank" rel="noopener noreferrer"> ${properties['website'].substring(0, 25)}... </a> </li>
         <li> <b>Site of Documented Incident:</b> ${properties['site of documented incident']} </li>
         <li> <b>Place:</b> ${properties['place']} </li>
         <li> <b>Structure:</b> ${properties['structure']} </li>
-        ${checkTarget()}
-        <li> <b>Media:</b> ${properties['media']} </li>
         ${checkImg()}
         
     </ul>

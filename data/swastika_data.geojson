@@ -932,7 +932,7 @@
                 "structure": "driveway",
                 "url_to_jpg": "http://news.keepmecurrent.com/wp-content/uploads/2016/04/xSwastika.jpg.pagespeed.ic.6X16O_zdwA.webp",
                 "city_state": "Scarborough, ME",
-                "Image?": true,
+                "Image?": false,
                 "img_link": "http://news.keepmecurrent.com/wp-content/uploads/2016/04/xSwastika.jpg.pagespeed.ic.6X16O_zdwA.webp",
                 "date": "Apr-16",
                 "month": "Apr",
@@ -5482,7 +5482,7 @@
                 "structure": "automobile",
                 "url_to_jpg": "https://img.washingtonpost.com/rf/image_1484w/2010-2019/WashingtonPost/2016/12/01/Cops-Courts/Images/untitled2-2-300x160%20(1).png?uuid=jb5LXrfTEeaVnBcsghI5dg and here : https://img.washingtonpost.com/rf/image_480w/2010-2019/WashingtonPost/2016/12/01/Cops-Courts/Images/untitled-4-300x188.png?uuid=k_z_mrfVEeaVnBcsghI5dg",
                 "city_state": "Burtonsville, MD",
-                "Image?": false,
+                "Image?": true,
                 "img_link": "https://img.washingtonpost.com/rf/image_1484w/2010-2019/WashingtonPost/2016/12/01/Cops-Courts/Images/untitled2-2-300x160%20(1).png?uuid=jb5LXrfTEeaVnBcsghI5dg",
                 "date": "Dec-16",
                 "month": "Dec",
@@ -5972,7 +5972,7 @@
                 "structure": "rock",
                 "url_to_jpg": "http://multifiles.pressherald.com/uploads/sites/2/2016/12/674865_985110-20161210-graffiti-00.jpg",
                 "city_state": "Waterville, ME",
-                "Image?": true,
+                "Image?": false,
                 "img_link": "http://multifiles.pressherald.com/uploads/sites/2/2016/12/674865_985110-20161210-graffiti-00.jpg",
                 "date": "Dec-16",
                 "month": "Dec",
@@ -10986,8 +10986,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -74.11917877,
-                    40.97966766
+                    -74.1191864,
+                    40.9796257
                 ]
             }
         },
@@ -13786,8 +13786,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -74.11917877,
-                    40.97966766
+                    -74.1191864,
+                    40.9796257
                 ]
             }
         },
@@ -15466,8 +15466,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -74.11917877,
-                    40.97966766
+                    -74.1191864,
+                    40.9796257
                 ]
             }
         },
@@ -17382,7 +17382,7 @@
                 "structure": "flag",
                 "url_to_jpg": "https://media.krqe.com/nxs-krqetv-media-us-east-1/photo/2017/09/04/nazi-house-1_31016483_ver1.0_640_360.jpg",
                 "city_state": "Albuquerque, NM",
-                "Image?": true,
+                "Image?": false,
                 "img_link": "https://media.krqe.com/nxs-krqetv-media-us-east-1/photo/2017/09/04/nazi-house-1_31016483_ver1.0_640_360.jpg",
                 "date": "Sep-17",
                 "month": "Sep",
@@ -19167,7 +19167,7 @@
                 "structure": "window",
                 "url_to_jpg": "https://media.kron.com/nxs-krontv-media-us-east-1/photo/2017/10/20/0BE4769662E54A18818184F8C7C63584_36007078_ver1.0_1280_720.jpg",
                 "city_state": "San Francisco, CA",
-                "Image?": true,
+                "Image?": false,
                 "img_link": "https://media.kron.com/nxs-krontv-media-us-east-1/photo/2017/10/20/0BE4769662E54A18818184F8C7C63584_36007078_ver1.0_1280_720.jpg",
                 "date": "Oct-17",
                 "month": "Oct",
@@ -24162,7 +24162,7 @@
                 "reported phenomenon other than swastika": "racist-flyer",
                 "reported phenomenon other than swastika 2": "none",
                 "reported phenomenon other than swastika 3": "none",
-                "target": "National Socialist Legion",
+                "target": "none",
                 "accompanying text": "White-Men-don't-let-them-take-your-Guns",
                 "accompanying visual signs": "none",
                 "Nazi Reference": "no",
@@ -24356,8 +24356,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -74.11917877,
-                    40.97966766
+                    -74.1191864,
+                    40.9796257
                 ]
             }
         },
@@ -29151,8 +29151,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -74.11917877,
-                    40.97966766
+                    -74.1191864,
+                    40.9796257
                 ]
             }
         },
@@ -46676,7 +46676,7 @@
                 "site of documented incident": "private property",
                 "structure": "pavement",
                 "url_to_jpg": "none",
-                "city_state": "Florida Keys Scenic Hwy, Tavernier, FL 33070",
+                "city_state": "Florida Keys, FL",
                 "Image?": false,
                 "img_link": "",
                 "date": "Jan-21",
@@ -46686,8 +46686,8 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    -80.5502575,
-                    24.9791045
+                    -81.08334351,
+                    24.74897194
                 ]
             }
         },
