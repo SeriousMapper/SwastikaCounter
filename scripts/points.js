@@ -799,6 +799,8 @@ function loadCard(properties) {
         <li> <b>Site of Documented Incident:</b> ${properties['site of documented incident']} </li>
         <li> <b>Place:</b> ${properties['place']} </li>
         <li> <b>Structure:</b> ${properties['structure']} </li>
+        <li> <b>Media:</b> ${properties['media']}</li>
+        ${checkTarget()}
         ${checkImg()}
         
     </ul>
