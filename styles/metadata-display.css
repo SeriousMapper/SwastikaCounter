@@ -105,9 +105,12 @@
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     border: 3px solid rgb(231, 231, 231);
     border-radius: 10px;
+    text-transform: capitalize;
 
 }
-
+.query-card a {
+    text-transform: lowercase;
+}
 .query-card ul {
     list-style: none;
     list-style-type: none;

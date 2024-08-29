@@ -31,8 +31,8 @@ let queryYears = false;
 let cityStateFilter;
 let legend = L.control({ position: 'bottomleft' });
 let pointSingular = []; //data wrapper for individual cities
-let filters = {"site of documented incident": [], "source": [],  "media":[], "target":[]}
-let filterColors = {"site of documented incident": [], "source": [],  "media":[], 'target':[]}
+let filters = {"site of documented incident": [], "source": [],  "media":[], "targeted community":[]}
+let filterColors = {"site of documented incident": [], "source": [],  "media":[], 'targeted community':[]}
 let showImagesOnly = true;
 let pointPane;
 
@@ -782,7 +782,7 @@ function populateQuery(features) {
 function loadCard(properties) {
     const checkTarget = ()=>{
         if(properties['target'] != 'none') {
-            return(`<li> <b>Target:</b> ${properties['target']} </li>`)
+            return(`<li> <b>Targeted Community:</b> ${properties['targeted community']} </li>`)
         }
         return ''
     }
@@ -795,7 +795,7 @@ function loadCard(properties) {
     return `<div class="query-card">
     <ul>
         <li> <b>Date of discovery or report:</b> ${properties['date of discovery or report']} </li>
-        <li> <b>Website:</b> <a href="${properties['website']}" target="_blank" rel="noopener noreferrer"> ${properties['website'].substring(0, 25)}... </a> </li>
+        <li> <b>Source:</b> <a href="${properties['website']}" target="_blank" rel="noopener noreferrer"> ${properties['website'].substring(0, 25)}... </a> </li>
         <li> <b>Site of Documented Incident:</b> ${properties['site of documented incident']} </li>
         <li> <b>Place:</b> ${properties['place']} </li>
         <li> <b>Structure:</b> ${properties['structure']} </li>
