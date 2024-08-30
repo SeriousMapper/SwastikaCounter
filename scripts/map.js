@@ -143,7 +143,7 @@ async function getData(map) {
         }, 100)
     )
 
-    await $.getJSON("data/swastika_data_aug29.geojson").then(async function (response) {
+    await $.getJSON("data/swastika_data_aug30.geojson").then(async function (response) {
         console.log(response)
         pointLayer.storeData(response)
         pointLayer.loadLayer(map)
