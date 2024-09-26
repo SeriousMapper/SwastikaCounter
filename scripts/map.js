@@ -269,8 +269,8 @@ function loadMainMenu() {
 
     pointBtn.appendTo(menu)
     pointBtn.attr('id', 'point-filter-btn')
-    shareBtn.appendTo(menu)
     helpBtn.appendTo(menu)
+    shareBtn.appendTo(menu)
 
 
     shareBtn.on('click', ()=> {
